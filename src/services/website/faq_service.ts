@@ -1,6 +1,6 @@
 // Axios
 import { apiPost, apiPatch, apiDelete } from '../../core/apiCall';
-import { SBR, FBR } from '../../core/BaseResponse';
+import { SBR, FBR, CUBR, DBR } from '../../core/BaseResponse';
 
 // Zod
 import { z } from 'zod';
@@ -12,7 +12,7 @@ import {
 import { BaseQuerySchema } from '../../zod_utils/zod_base_schema';
 
 // Enums
-import { Status } from '../../core/Enums';
+import { Status } from '../../core/EnumsDB';
 
 // URL and Endpoints
 const URL = 'website/faq';
@@ -74,14 +74,14 @@ export const findFaqs = async (data: FaqQueryDTO): Promise<FBR<FAQ[]>> => {
   return apiPost<FBR<FAQ[]>, FaqQueryDTO>(ENDPOINTS.find, data);
 };
 
-export const createFaq = async (data: FaqDTO): Promise<SBR> => {
-  return apiPost<SBR, FaqDTO>(ENDPOINTS.create, data);
+export const createFaq = async (data: FaqDTO): Promise<CUBR<FAQ>> => {
+  return apiPost<CUBR<FAQ>, FaqDTO>(ENDPOINTS.create, data);
 };
 
-export const updateFaq = async (id: string, data: FaqDTO): Promise<SBR> => {
-  return apiPatch<SBR, FaqDTO>(ENDPOINTS.update(id), data);
+export const updateFaq = async (id: string, data: FaqDTO): Promise<CUBR<FAQ>> => {
+  return apiPatch<CUBR<FAQ>, FaqDTO>(ENDPOINTS.update(id), data);
 };
 
-export const deleteFaq = async (id: string): Promise<SBR> => {
-  return apiDelete<SBR>(ENDPOINTS.delete(id));
+export const deleteFaq = async (id: string): Promise<DBR> => {
+  return apiDelete<DBR>(ENDPOINTS.delete(id));
 };

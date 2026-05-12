@@ -12,7 +12,7 @@ import {
 import { BaseQuerySchema } from '../../zod_utils/zod_base_schema';
 
 // Enums
-import { Status } from '../../core/Enums';
+import { Status } from '../../core/EnumsDB';
 
 // URL and Endpoints
 const URL = 'website/static_pages';

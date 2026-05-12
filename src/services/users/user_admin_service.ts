@@ -15,7 +15,7 @@ import {
 import { z } from "zod";
 
 // Enums
-import { AdminRole, Status } from "src/core/Enums";
+import { AdminRole, Status } from "src/core/EnumsDB";
 
 const URL = "admin";
 

@@ -14,7 +14,7 @@ import {
 import { BaseQuerySchema } from '../../../zod_utils/zod_base_schema';
 
 // Enums
-import { Status } from '../../../core/Enums';
+import { Status } from '../../../core/EnumsBase';
 
 // Other Models
 import { MasterMainCountry } from '../../../services/master/main/master_main_country_service';

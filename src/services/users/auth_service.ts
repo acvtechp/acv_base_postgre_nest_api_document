@@ -12,7 +12,7 @@ import {
 } from "src/zod_utils/zod_utils";
 
 // Enums
-import { LoginFrom } from "src/core/Enums";
+import { LoginFrom } from "src/core/EnumsBase";
 
 const URL = "auth";
 

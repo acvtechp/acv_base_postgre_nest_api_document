@@ -1,4 +1,12 @@
-import { FileType, Status } from "./Enums";
+import { FileType, Status } from "./EnumsDB";
+
+export interface CUBR<T = any> {
+  status: boolean;
+  message: string;
+  error?: string;
+  data?: T;
+  id?: string;
+}
 
 export interface PageData {
   total_count: number;
@@ -7,12 +15,28 @@ export interface PageData {
   page_index: number;
 }
 
+export interface FBR<T> {
+  status: boolean;
+  message: string;
+  page_data: PageData;
+  data?: T;
+  error?: string;
+  summary_vehicle_data?: any;
+  summary_driver_data?: any;
+  summary_day_data?: any;
+  summary_data?: any;
+}
+
+export interface DBR {
+  status: boolean;
+  message: string;
+  error?: string;
+}
+
 export interface SBR {
   status: boolean;
   message: string;
   error?: string;
-  data?: any;
-  id?: string;
 }
 
 export interface BR<T> {
@@ -22,40 +46,12 @@ export interface BR<T> {
   data?: T;
 }
 
-export interface FBR<T> {
-  status: boolean;
-  message: string;
-  error?: string;
-  page_data: PageData;
-  data?: T;
-  summary_vehicle_data?: [];
-  summary_driver_data?: [];
-  summary_day_data?: [];
-  summary_data?: SummaryData;
-}
-
-export interface SummaryData {
-  dm: number;
-  m_on_ts: number;
-  m_off_ts: number;
-  i_on_ts: number;
-  i_off_ts: number;
-  ms: number;
-  as: number;
-  dm_km: string;
-  m_on_ts_f: string;
-  m_off_ts_f: string;
-  i_on_ts_f: string;
-  i_off_ts_f: string;
-}
-
 export interface AWSPresignedUrl {
   presigned_url: string;
   file_url: string;
   file_key: string;
 }
 
-// ✅ BaseCommonFile Interface
 export interface BaseCommonFile extends Record<string, unknown> {
   // Usage Type
   usage_type: string;
@@ -74,7 +70,6 @@ export interface BaseCommonFile extends Record<string, unknown> {
   added_date_time: string;
   modified_date_time: string;
 }
-
 
 export const r_log = (data = {}) => {
   return data;

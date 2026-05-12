@@ -1,5 +1,5 @@
+import { r_log } from 'src/core/BaseResponse';
 import { z } from 'zod';
-import { r_log } from '../core/BaseResponse';
 
 // Strings
 const handleNullOrUndefined = (value: unknown): string =>
@@ -18,7 +18,7 @@ export const stringUUIDMandatory = (fieldName: string) => {
 export const stringMandatory = (
   fieldName: string,
   min: number = 1,
-  max: number = 100,
+  max: number = 1000,
 ) => {
   const schema = z
     .string()
@@ -33,8 +33,8 @@ export const stringMandatory = (
 export const stringOptional = (
   fieldName: string,
   min: number = 0,
-  max: number = 255,
-  defaultValue: string = ''
+  max: number = 1000,
+  defaultValue: string = '',
 ) => {
   const schema = z
     .string()
@@ -48,50 +48,62 @@ export const stringOptional = (
 
 const handleNullOrUndefinedStringArray = (
   value: unknown,
-  defaultValue: string[]
+  defaultValue: string[],
 ): string[] => (Array.isArray(value) ? value : defaultValue);
 
 export const stringArrayMandatory = (
   fieldName: string,
   min: number = 1,
-  max: number = 100,
-  unique: boolean = false
+  max: number = 1000,
+  unique: boolean = false,
 ) => {
-  const schema = z
+  const baseSchema = z
     .array(z.string().trim(), {
-      invalid_type_error: `${fieldName} must be an array of strings.`,
+      error: `${fieldName} must be an array of strings.`,
     })
-    .min(min, `${fieldName} must contain at least ${min} items.`)
-    .max(max, `${fieldName} must contain at most ${max} items.`);
-  if (unique) {
-    schema.refine(
-      (arr) => new Set(arr).size === arr.length,
-      `${fieldName} must contain unique values.`
-    );
-  }
-  return schema.transform((val) => handleNullOrUndefinedStringArray(val, []));
+    .min(min, {
+      error: `${fieldName} must contain at least ${min} items.`,
+    })
+    .max(max, {
+      error: `${fieldName} must contain at most ${max} items.`,
+    });
+
+  const finalSchema = unique
+    ? baseSchema.refine((arr) => new Set(arr).size === arr.length, {
+        error: `${fieldName} must contain unique values.`,
+      })
+    : baseSchema;
+
+  return finalSchema.transform((val) =>
+    handleNullOrUndefinedStringArray(val, []),
+  );
 };
 
 export const stringArrayOptional = (
   fieldName: string,
   min: number = 0,
-  max: number = 100,
+  max: number = 1000,
   defaultValue: string[] = [],
-  unique: boolean = false
+  unique: boolean = false,
 ) => {
-  const schema = z
+  const baseSchema = z
     .array(z.string().trim(), {
-      invalid_type_error: `${fieldName} must be an array of strings.`,
+      error: `${fieldName} must be an array of strings.`,
     })
-    .min(min, `${fieldName} must contain at least ${min} items.`)
-    .max(max, `${fieldName} must contain at most ${max} items.`);
-  if (unique) {
-    schema.refine(
-      (arr) => new Set(arr).size === arr.length,
-      `${fieldName} must contain unique values.`
-    );
-  }
-  return schema.optional().default(defaultValue);
+    .min(min, {
+      error: `${fieldName} must contain at least ${min} items.`,
+    })
+    .max(max, {
+      error: `${fieldName} must contain at most ${max} items.`,
+    });
+
+  const finalSchema = unique
+    ? baseSchema.refine((arr) => new Set(arr).size === arr.length, {
+        error: `${fieldName} must contain unique values.`,
+      })
+    : baseSchema;
+
+  return finalSchema.optional().default(defaultValue);
 };
 
 // Numbers
@@ -99,18 +111,26 @@ export const numberMandatory = (
   fieldName: string,
   min: number = 1,
   max: number = 100000000000000,
-  defaultValue: number = 0
+  defaultValue: number = 0,
 ) => {
   return z.preprocess(
     (val) => {
-      if (val === null || val === undefined || val === '') { return defaultValue; }
-      if (typeof val === 'string' && !isNaN(Number(val))) { return Number(val); }
+      if (val === null || val === undefined || val === '') return defaultValue;
+      if (typeof val === 'string' && !Number.isNaN(Number(val))) {
+        return Number(val);
+      }
       return val;
     },
     z
-      .number({ invalid_type_error: `${fieldName} must be a number.` })
-      .min(min, `${fieldName} must be at least ${min}.`)
-      .max(max, `${fieldName} must be at most ${max}.`)
+      .number({
+        error: `${fieldName} must be a number.`,
+      })
+      .min(min, {
+        error: `${fieldName} must be at least ${min}.`,
+      })
+      .max(max, {
+        error: `${fieldName} must be at most ${max}.`,
+      }),
   );
 };
 
@@ -118,73 +138,92 @@ export const numberOptional = (
   fieldName: string,
   min: number = 0,
   max: number = 100000000000000,
-  defaultValue: number = 0
+  defaultValue: number = 0,
 ) => {
   return z.preprocess(
-    (val) => (typeof val === 'string' && val.trim() !== '' ? Number(val) : val),
+    (val) => {
+      if (typeof val === 'string' && val.trim() !== '') {
+        return Number(val);
+      }
+      return val;
+    },
     z
-      .number({ invalid_type_error: `${fieldName} must be a number.` })
-      .min(min, `${fieldName} must be at least ${min}.`)
-      .max(max, `${fieldName} must be at most ${max}.`)
+      .number({
+        error: `${fieldName} must be a number.`,
+      })
+      .min(min, {
+        error: `${fieldName} must be at least ${min}.`,
+      })
+      .max(max, {
+        error: `${fieldName} must be at most ${max}.`,
+      })
       .optional()
-      .default(defaultValue)
+      .default(defaultValue),
   );
 };
 
 const handleNullOrUndefinedNumberArray = (
   value: unknown,
-  defaultValue: number[]
+  defaultValue: number[],
 ): number[] => (Array.isArray(value) ? value : defaultValue);
 
 export const numberArrayMandatory = (
   fieldName: string,
   min: number = 1,
-  max: number = 100,
-  unique: boolean = false
+  max: number = 1000,
+  unique: boolean = false,
 ) => {
-  const schema = z
+  const baseSchema = z
     .array(
       z.number({
-        invalid_type_error: `${fieldName} must be an array of numbers.`,
-      })
+        error: `${fieldName} must be an array of numbers.`,
+      }),
     )
-    .min(min, `${fieldName} must contain at least ${min} items.`)
-    .max(max, `${fieldName} must contain at most ${max} items.`);
+    .min(min, {
+      error: `${fieldName} must contain at least ${min} items.`,
+    })
+    .max(max, {
+      error: `${fieldName} must contain at most ${max} items.`,
+    });
 
-  if (unique) {
-    schema.refine(
-      (arr) => new Set(arr).size === arr.length,
-      `${fieldName} must contain unique values.`
-    );
-  }
+  const finalSchema = unique
+    ? baseSchema.refine((arr) => new Set(arr).size === arr.length, {
+        error: `${fieldName} must contain unique values.`,
+      })
+    : baseSchema;
 
-  return schema.transform((val) => handleNullOrUndefinedNumberArray(val, []));
+  return finalSchema.transform((val) =>
+    handleNullOrUndefinedNumberArray(val, []),
+  );
 };
 
 export const numberArrayOptional = (
   fieldName: string,
   min: number = 0,
-  max: number = 100,
+  max: number = 1000,
   defaultValue: number[] = [],
-  unique: boolean = false
+  unique: boolean = false,
 ) => {
-  const schema = z
+  const baseSchema = z
     .array(
       z.number({
-        invalid_type_error: `${fieldName} must be an array of numbers.`,
-      })
+        error: `${fieldName} must be an array of numbers.`,
+      }),
     )
-    .min(min, `${fieldName} must contain at least ${min} items.`)
-    .max(max, `${fieldName} must contain at most ${max} items.`);
+    .min(min, {
+      error: `${fieldName} must contain at least ${min} items.`,
+    })
+    .max(max, {
+      error: `${fieldName} must contain at most ${max} items.`,
+    });
 
-  if (unique) {
-    schema.refine(
-      (arr) => new Set(arr).size === arr.length,
-      `${fieldName} must contain unique values.`
-    );
-  }
+  const finalSchema = unique
+    ? baseSchema.refine((arr) => new Set(arr).size === arr.length, {
+        error: `${fieldName} must contain unique values.`,
+      })
+    : baseSchema;
 
-  return schema.optional().default(defaultValue);
+  return finalSchema.optional().default(defaultValue);
 };
 
 // Double Numbers
@@ -193,49 +232,70 @@ export const doubleMandatory = (
   min: number = 0.1,
   max: number = 1000000.0,
   decimalPlaces: number = 2,
-  defaultValue: number = 0.0
+  defaultValue: number = 0.0,
 ) => {
   return z.preprocess(
     (val) => {
-      if (typeof val === 'string') { val = parseFloat(val); }
-      if (typeof val === 'number') { return parseFloat(val.toFixed(decimalPlaces)); }
+      if (typeof val === 'string') val = parseFloat(val);
+      if (typeof val === 'number') {
+        return parseFloat(val.toFixed(decimalPlaces));
+      }
       return val;
     },
     z
-      .number({ invalid_type_error: `${fieldName} must be a number.` })
-      .min(min, `${fieldName} must be at least ${min}.`)
-      .max(max, `${fieldName} must be at most ${max}.`)
-      .default(defaultValue)
+      .number({
+        error: `${fieldName} must be a number.`,
+      })
+      .min(min, {
+        error: `${fieldName} must be at least ${min}.`,
+      })
+      .max(max, {
+        error: `${fieldName} must be at most ${max}.`,
+      })
+      .default(defaultValue),
   );
 };
 
 export const doubleMandatoryLatLng = (
   fieldName: string,
-  defaultValue: number = 0.0
+  defaultValue: number = 0.0,
 ) => {
   return z.preprocess(
     (val) => {
-      if (typeof val === 'string') { val = parseFloat(val); }
-      if (typeof val === 'number') { return parseFloat(val.toFixed(6)); }
+      if (typeof val === 'string') val = parseFloat(val);
+      if (typeof val === 'number') return parseFloat(val.toFixed(6));
       return val;
     },
     z
-      .number({ invalid_type_error: `${fieldName} must be a number.` })
-      .min(-180, `${fieldName} must be at least -180.`)
-      .max(180, `${fieldName} must be at most 180.`)
-      .default(defaultValue)
+      .number({
+        error: `${fieldName} must be a number.`,
+      })
+      .min(-180, {
+        error: `${fieldName} must be at least -180.`,
+      })
+      .max(180, {
+        error: `${fieldName} must be at most 180.`,
+      })
+      .default(defaultValue),
   );
 };
 
 export const doubleMandatoryAmount = (
   fieldName: string,
-  defaultValue: number = 0.0
+  defaultValue: number = 0.0,
 ) => {
-  return z.preprocess((val) => {
-    if (typeof val === 'string') { val = parseFloat(val); }
-    if (typeof val === 'number') { return parseFloat(val.toFixed(6)); }
-    return val;
-  }, z.number({ invalid_type_error: `${fieldName} must be a number.` }).default(defaultValue));
+  return z.preprocess(
+    (val) => {
+      if (typeof val === 'string') val = parseFloat(val);
+      if (typeof val === 'number') return parseFloat(val.toFixed(6));
+      return val;
+    },
+    z
+      .number({
+        error: `${fieldName} must be a number.`,
+      })
+      .default(defaultValue),
+  );
 };
 
 export const doubleOptional = (
@@ -243,78 +303,99 @@ export const doubleOptional = (
   min: number = 0.0,
   max: number = 1000000.0,
   decimalPlaces: number = 2,
-  defaultValue: number = 0.0
+  defaultValue: number = 0.0,
 ) => {
   return z
     .preprocess(
       (val) => {
-        if (typeof val === 'string') { val = parseFloat(val); }
-        if (typeof val === 'number') { return parseFloat(val.toFixed(decimalPlaces)); }
+        if (typeof val === 'string') val = parseFloat(val);
+        if (typeof val === 'number') {
+          return parseFloat(val.toFixed(decimalPlaces));
+        }
         return val;
       },
       z
-        .number({ invalid_type_error: `${fieldName} must be a number.` })
-        .min(min, `${fieldName} must be at least ${min}.`)
-        .max(max, `${fieldName} must be at most ${max}.`)
-        .default(defaultValue)
+        .number({
+          error: `${fieldName} must be a number.`,
+        })
+        .min(min, {
+          error: `${fieldName} must be at least ${min}.`,
+        })
+        .max(max, {
+          error: `${fieldName} must be at most ${max}.`,
+        })
+        .default(defaultValue),
     )
     .optional();
 };
 
 export const doubleOptionalLatLng = (
   fieldName: string,
-  defaultValue: number = 0.0
+  defaultValue: number = 0.0,
 ) => {
   return z
     .preprocess(
       (val) => {
-        if (typeof val === 'string') { val = parseFloat(val); }
-        if (typeof val === 'number') { return parseFloat(val.toFixed(6)); }
+        if (typeof val === 'string') val = parseFloat(val);
+        if (typeof val === 'number') return parseFloat(val.toFixed(6));
         return val;
       },
       z
-        .number({ invalid_type_error: `${fieldName} must be a number.` })
-        .min(-180, `${fieldName} must be at least -180.`)
-        .max(180, `${fieldName} must be at most 180.`)
-        .default(defaultValue)
+        .number({
+          error: `${fieldName} must be a number.`,
+        })
+        .min(-180, {
+          error: `${fieldName} must be at least -180.`,
+        })
+        .max(180, {
+          error: `${fieldName} must be at most 180.`,
+        })
+        .default(defaultValue),
     )
     .optional();
 };
 
 export const doubleOptionalAmount = (
   fieldName: string,
-  defaultValue: number = 0.0
+  defaultValue: number = 0.0,
 ) => {
   return z
-    .preprocess((val) => {
-      if (typeof val === 'string') { val = parseFloat(val); }
-      if (typeof val === 'number') { return parseFloat(val.toFixed(6)); }
-      return val;
-    }, z.number({ invalid_type_error: `${fieldName} must be a number.` }).default(defaultValue))
+    .preprocess(
+      (val) => {
+        if (typeof val === 'string') val = parseFloat(val);
+        if (typeof val === 'number') return parseFloat(val.toFixed(6));
+        return val;
+      },
+      z
+        .number({
+          error: `${fieldName} must be a number.`,
+        })
+        .default(defaultValue),
+    )
     .optional();
 };
 
 // Boolean
 const handleNullOrUndefinedBoolean = (
   value: unknown,
-  defaultValue: boolean
+  defaultValue: boolean,
 ): boolean => (typeof value === 'boolean' ? value : defaultValue);
 
 export const booleanMandatory = (
   fieldName: string,
-  defaultValue: boolean = false
+  defaultValue: boolean = false,
 ) => {
   return z
-    .boolean({ invalid_type_error: `${fieldName} must be true or false.` })
+    .boolean({ error: `${fieldName} must be true or false.` })
     .transform((val) => handleNullOrUndefinedBoolean(val, defaultValue));
 };
 
 export const booleanOptional = (
   fieldName: string,
-  defaultValue: boolean = false
+  defaultValue: boolean = false,
 ) => {
   return z
-    .boolean({ invalid_type_error: `${fieldName} must be true or false.` })
+    .boolean({ error: `${fieldName} must be true or false.` })
     .optional()
     .default(defaultValue);
 };
@@ -323,21 +404,17 @@ export const booleanOptional = (
 export const enumMandatory = <T extends Record<string, string>>(
   fieldName: string,
   enumType: T,
-  defaultValue: T[keyof T]
+  defaultValue: T[keyof T],
 ) => {
   return z
     .union([
       z.nativeEnum(enumType, {
-        invalid_type_error: `${fieldName} should be one of the following values: ${Object.values(
-          enumType
-        ).join(', ')}.`,
+        error: `${fieldName} should be one of the following values: ${Object.values(enumType).join(', ')}.`,
       }),
       z
         .string()
         .refine((val) => Object.values(enumType).includes(val as T[keyof T]), {
-          message: `${fieldName} should be one of the following values: ${Object.values(
-            enumType
-          ).join(', ')}.`,
+          message: `${fieldName} should be one of the following values: ${Object.values(enumType).join(', ')}.`,
         }),
     ])
     .default(defaultValue)
@@ -349,25 +426,23 @@ export const enumMandatory = <T extends Record<string, string>>(
 export const enumOptional = <T extends Record<string, string>>(
   fieldName: string,
   enumType: T,
-  defaultValue: T[keyof T]
+  defaultValue: T[keyof T],
 ) => {
   return z
     .nativeEnum(enumType, {
-      invalid_type_error: `${fieldName} must be an array containing only the following values: ${Object.values(
-        enumType
-      ).join(', ')}.`,
+      error: `${fieldName} must be an array containing only the following values: ${Object.values(enumType).join(', ')}.`,
     })
     .optional()
-    .default(() => defaultValue);
+    .default(() => defaultValue as any);
 };
 
 const handleNullOrUndefinedEnumArray = <T>(
   value: unknown,
-  defaultValue: T[]
+  defaultValue: T[],
 ): T[] => (Array.isArray(value) ? value : defaultValue);
 
 export const getAllEnums = <T extends Record<string, string>>(
-  enumType: T
+  enumType: T,
 ): (keyof T)[] => {
   return Object.values(enumType) as (keyof T)[];
 };
@@ -377,21 +452,19 @@ export const enumArrayMandatory = <T extends Record<string, string>>(
   enumType: T,
   defaultValue: (keyof T)[] = getAllEnums(enumType),
   min: number = 1,
-  max: number = 100,
-  unique: boolean = false
+  max: number = 1000,
+  unique: boolean = false,
 ) => {
   const schema = z
     .array(z.nativeEnum(enumType), {
-      invalid_type_error: `${fieldName} must be an array containing only the following values: ${Object.values(
-        enumType
-      ).join(', ')}.`,
+      error: `${fieldName} must be an array containing only the following values: ${Object.values(enumType).join(', ')}.`,
     })
     .min(min, `${fieldName} must contain at least ${min} items.`)
     .max(max, `${fieldName} must contain at most ${max} items.`);
   if (unique) {
     schema.refine(
       (arr) => new Set(arr).size === arr.length,
-      `${fieldName} must contain unique values.`
+      `${fieldName} must contain unique values.`,
     );
   }
   schema.transform((val) => handleNullOrUndefinedEnumArray(val, []));
@@ -403,14 +476,12 @@ export const enumArrayOptional = <T extends Record<string, string>>(
   enumType: T,
   defaultValue: (keyof T)[] = getAllEnums(enumType),
   min: number = 0,
-  max: number = 100,
-  unique: boolean = false
+  max: number = 1000,
+  unique: boolean = false,
 ) => {
   const schema = z
     .array(z.nativeEnum(enumType), {
-      invalid_type_error: `${fieldName} must be an array containing only the following values: ${Object.values(
-        enumType
-      ).join(', ')}.`,
+      error: `${fieldName} must be an array containing only the following values: ${Object.values(enumType).join(', ')}.`,
     })
     .min(min, `${fieldName} must contain at least ${min} items.`)
     .max(max, `${fieldName} must contain at most ${max} items.`);
@@ -418,7 +489,7 @@ export const enumArrayOptional = <T extends Record<string, string>>(
   if (unique) {
     schema.refine(
       (arr) => new Set(arr).size === arr.length,
-      `${fieldName} must contain unique values.`
+      `${fieldName} must contain unique values.`,
     );
   }
   return schema.optional().default(() => defaultValue as T[keyof T][]);
@@ -427,7 +498,7 @@ export const enumArrayOptional = <T extends Record<string, string>>(
 // Date
 const handleNullOrUndefinedDate = (
   value: unknown,
-  defaultValue: string
+  defaultValue: string,
 ): string => {
   if (typeof value === 'string' && !isNaN(Date.parse(value))) {
     return value;
@@ -439,23 +510,27 @@ export const dateMandatory = (
   fieldName: string,
   minDate?: string,
   maxDate?: string,
-  defaultValue: string = new Date().toISOString()
+  defaultValue: string = new Date().toISOString(),
 ) => {
   const schema = z
     .string()
-    .refine((val) => val !== '' && val !== null && val !== undefined, {
-      message: `Please select ${fieldName}.`,
-    })
     .refine((val) => !isNaN(Date.parse(val)), {
       message: `${fieldName} must be a valid ISO date.`,
     })
-    .refine((val) => !minDate || new Date(val) >= new Date(minDate), {
-      message: `${fieldName} must be after ${minDate}.`,
-    })
-    .refine((val) => !maxDate || new Date(val) <= new Date(maxDate), {
-      message: `${fieldName} must be before ${maxDate}.`,
-    })
     .transform((val) => handleNullOrUndefinedDate(val, defaultValue));
+
+  if (minDate) {
+    schema.refine((val) => new Date(val) >= new Date(minDate), {
+      message: `${fieldName} must be after ${minDate}.`,
+    });
+  }
+
+  if (maxDate) {
+    schema.refine((val) => new Date(val) <= new Date(maxDate), {
+      message: `${fieldName} must be before ${maxDate}.`,
+    });
+  }
+
   return schema;
 };
 
@@ -464,40 +539,31 @@ export const dateOptional = (
   minDate?: string,
   maxDate?: string,
 ) => {
-  const base = z.string();
+  let schema = z.string();
 
-  const refinements: Array<{
-    check: (val: string) => boolean;
-    message: string;
-  }> = [
-      {
-        check: (val) => !val.trim() || !isNaN(Date.parse(val)),
-        message: `${fieldName} must be a valid ISO date.`,
-      },
-    ];
+  schema = schema.refine((val) => !val.trim() || !isNaN(Date.parse(val)), {
+    error: `${fieldName} must be a valid ISO date.`,
+  });
 
   if (minDate) {
-    refinements.push({
-      check: (val) => !val.trim() || new Date(val) >= new Date(minDate),
-      message: `${fieldName} must be after ${minDate}.`,
-    });
+    schema = schema.refine(
+      (val) => !val.trim() || new Date(val) >= new Date(minDate),
+      {
+        error: `${fieldName} must be after ${minDate}.`,
+      },
+    );
   }
 
   if (maxDate) {
-    refinements.push({
-      check: (val) => !val.trim() || new Date(val) <= new Date(maxDate),
-      message: `${fieldName} must be before ${maxDate}.`,
-    });
+    schema = schema.refine(
+      (val) => !val.trim() || new Date(val) <= new Date(maxDate),
+      {
+        error: `${fieldName} must be before ${maxDate}.`,
+      },
+    );
   }
 
-  let refined: z.ZodTypeAny = base;
-  for (const { check, message } of refinements) {
-    refined = (refined as z.ZodString).refine(check, { message });
-  }
-
-  return (refined as z.ZodEffects<z.ZodString, string, string>)
-    .optional()
-    .default('');
+  return schema.optional().default('');
 };
 
 export const dateTimeMandatory = (
@@ -533,65 +599,56 @@ export const dateTimeOptional = (
   minDate?: string,
   maxDate?: string,
 ) => {
-  const base = z.string();
+  let schema = z.string();
 
-  const refinements: Array<{
-    check: (val: string) => boolean;
-    message: string;
-  }> = [
-      {
-        check: (val) => !val.trim() || !isNaN(Date.parse(val)),
-        message: `${fieldName} must be a valid ISO date time.`,
-      },
-    ];
+  schema = schema.refine((val) => !val.trim() || !isNaN(Date.parse(val)), {
+    error: `${fieldName} must be a valid ISO date time.`,
+  });
 
   if (minDate) {
-    refinements.push({
-      check: (val) => !val.trim() || new Date(val) >= new Date(minDate),
-      message: `${fieldName} must be after ${minDate}.`,
-    });
+    schema = schema.refine(
+      (val) => !val.trim() || new Date(val) >= new Date(minDate),
+      {
+        error: `${fieldName} must be after ${minDate}.`,
+      },
+    );
   }
 
   if (maxDate) {
-    refinements.push({
-      check: (val) => !val.trim() || new Date(val) <= new Date(maxDate),
-      message: `${fieldName} must be before ${maxDate}.`,
-    });
+    schema = schema.refine(
+      (val) => !val.trim() || new Date(val) <= new Date(maxDate),
+      {
+        error: `${fieldName} must be before ${maxDate}.`,
+      },
+    );
   }
 
-  let refined: z.ZodTypeAny = base;
-  for (const { check, message } of refinements) {
-    refined = (refined as z.ZodString).refine(check, { message });
-  }
-
-  return (refined as z.ZodEffects<z.ZodString, string, string>)
-    .optional()
-    .default('');
+  return schema.optional().default('');
 };
 
 // Nested Object
 export const nestedObjectMandatory = <T extends z.ZodRawShape>(
   fieldName: string,
   schema: z.ZodObject<T>,
-  defaultValue: z.infer<typeof schema>
+  defaultValue: z.infer<typeof schema>,
 ) => {
-  return schema.default(() => defaultValue);
+  return schema.default(() => defaultValue as any);
 };
 
 export const nestedObjectOptional = <T extends z.ZodRawShape>(
   fieldName: string,
   schema: z.ZodObject<T>,
-  defaultValue: z.infer<typeof schema>
+  defaultValue: z.infer<typeof schema>,
 ) => {
-  return schema.optional().default(() => defaultValue);
+  return schema.optional().default(() => defaultValue as any);
 };
 
 export const dynamicJsonSchema = (
   fieldName: string,
-  defaultValue: Record<string, unknown> = {}
+  defaultValue: Record<string, any> = {},
 ) =>
   z
-    .record(z.any())
+    .record(z.string(), z.any())
     .optional()
     .default(() => defaultValue);
 
@@ -601,18 +658,18 @@ export const nestedArrayOfObjectMandatory = <T extends z.ZodRawShape>(
   schema: z.ZodObject<T>,
   defaultValue: z.infer<typeof schema>[] = [],
   min: number = 1,
-  max?: number
+  max?: number,
 ) => {
   let arraySchema = z
     .array(schema, {
-      invalid_type_error: `${fieldName} must be an array of objects.`,
+      error: `${fieldName} must be an array of objects.`,
     })
     .min(min, `${fieldName} must contain at least ${min} items.`);
 
   if (max !== undefined) {
     arraySchema = arraySchema.max(
       max,
-      `${fieldName} must contain at most ${max} items.`
+      `${fieldName} must contain at most ${max} items.`,
     );
   }
 
@@ -624,18 +681,18 @@ export const nestedArrayOfObjectsOptional = <T extends z.ZodRawShape>(
   schema: z.ZodObject<T>,
   defaultValue: z.infer<typeof schema>[] = [],
   min: number = 0,
-  max?: number
+  max?: number,
 ) => {
   let arraySchema = z
     .array(schema, {
-      invalid_type_error: `${fieldName} must be an array of objects.`,
+      error: `${fieldName} must be an array of objects.`,
     })
     .min(min, `${fieldName} must contain at least ${min} items.`);
 
   if (max !== undefined) {
     arraySchema = arraySchema.max(
       max,
-      `${fieldName} must contain at most ${max} items.`
+      `${fieldName} must contain at most ${max} items.`,
     );
   }
 
@@ -661,22 +718,22 @@ export const single_select_optional = (fieldName: string) => {
 export const multi_select_mandatory = (
   fieldName: string,
   min: number = 1,
-  max: number = 100,
-  defaultValue: string[] = []
+  max: number = 1000,
+  defaultValue: string[] = [],
 ) => {
   const schema = z
     .array(
       z.string({
-        invalid_type_error: `${fieldName} must be an array of strings.`,
-      })
+        error: `${fieldName} must be an array of strings.`,
+      }),
     )
     .min(
       min,
-      `Please select at least ${min} ${fieldName}${min > 1 ? 's' : ''}.`
+      `Please select at least ${min} ${fieldName}${min > 1 ? 's' : ''}.`,
     )
     .max(
       max,
-      `Please select at most ${max} ${fieldName}${max > 1 ? 's' : ''}.`
+      `Please select at most ${max} ${fieldName}${max > 1 ? 's' : ''}.`,
     );
   return schema.optional().default(defaultValue);
 };
@@ -684,17 +741,17 @@ export const multi_select_mandatory = (
 export const multi_select_optional = (
   fieldName: string,
   max: number = 1000,
-  defaultValue: string[] = []
+  defaultValue: string[] = [],
 ) => {
   const schema = z
     .array(
       z.string({
-        invalid_type_error: `${fieldName} must be an array of strings.`,
-      })
+        error: `${fieldName} must be an array of strings.`,
+      }),
     )
     .max(
       max,
-      `Please select at most ${max} ${fieldName}${max > 1 ? 's' : ''}.`
+      `Please select at most ${max} ${fieldName}${max > 1 ? 's' : ''}.`,
     );
   return schema.optional().default(defaultValue);
 };

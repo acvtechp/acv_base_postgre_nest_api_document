@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios';
 
-const KEY = '__vms_axios_instance__';
+const KEY = '__axios_instance__';
 
 export const setAxiosInstance = (instance: AxiosInstance) => {
   (globalThis as any)[KEY] = instance;

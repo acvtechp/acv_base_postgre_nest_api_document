@@ -8,7 +8,7 @@ import { enumArrayOptional, multi_select_optional } from 'src/zod_utils/zod_util
 import { BaseQuerySchema } from 'src/zod_utils/zod_base_schema';
 
 // Enums
-import { YesNo, Status, ExecutionStatus, RunType } from 'src/core/Enums';
+import { YesNo, Status, ExecutionStatus, RunType } from 'src/core/EnumsDB';
 
 const URL = 'cronjobs';
 

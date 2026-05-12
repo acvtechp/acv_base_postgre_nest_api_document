@@ -8,7 +8,7 @@ import { stringMandatory, stringOptional, enumOptional, numberMandatory, stringA
 import { BaseQuerySchema } from 'src/zod_utils/zod_base_schema';
 
 // Enums
-import { YesNo, Status, APIAuthType } from 'src/core/Enums';
+import { YesNo, Status, APIAuthType } from 'src/core/EnumsDB';
 
 const URL = 'external_api';
 
