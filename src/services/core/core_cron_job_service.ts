@@ -44,17 +44,17 @@ export interface CronJobLog extends Record<string, unknown> {
     success_details?: string;
     error_details?: string;
 
+    // Metadata
+    status: Status;
+    added_date_time: string;
+    modified_date_time: string;
+
     // Relations - Parent
     cron_job_id: string;
     CronJobList?: CronJobList;
     app_name?: string;
     cron_name?: string;
     is_latest_run: YesNo;
-
-    // Metadata
-    status: Status;
-    added_date_time: string;
-    modified_date_time: string;
 }
 
 // CronJobList Interface
@@ -66,7 +66,7 @@ export interface CronJobList extends Record<string, unknown> {
     app_name: string;
     category_name?: string;
     sub_category_name?: string;
-    
+
     job_name: string;
     job_description?: string;
 
