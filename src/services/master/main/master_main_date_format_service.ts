@@ -15,8 +15,6 @@ import { BaseQuerySchema } from '../../../zod_utils/zod_base_schema';
 import { Status } from '../../../core/Enums';
 
 // Other Models
-import { UserOrganisation } from '../../../services/main/users/user_organisation_service';
-import { User } from 'src/services/main/users/user_service';
 
 const URL = 'master/main/date_format';
 
@@ -46,15 +44,8 @@ export interface MasterMainDateFormat extends Record<string, unknown> {
   modified_date_time: string;
 
   // Relations - Child
-  // Child - User
-  UserOrganisation?: UserOrganisation[]
-  User?: User[]
 
   // Relations - Child Count
-  _count?: {
-    UserOrganisation?: number;
-    User?: number;
-  };
 }
 
 // MasterMainDateFormat Create/Update Schema

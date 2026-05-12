@@ -14,14 +14,6 @@ import { BaseQuerySchema } from '../../../zod_utils/zod_base_schema';
 // Enums
 import { Status } from '../../../core/Enums';
 
-// Other Models
-import { MasterMainCurrency } from '../../../services/master/main/master_main_currency_service';
-import { MasterMainTimeZone } from '../../../services/master/main/master_main_timezone_service';
-import { MasterMainState } from '../../../services/master/main/master_main_state_service';
-import { UserOrganisation } from '../../../services/main/users/user_organisation_service';
-import { MasterVehicle } from 'src/services/main/vehicle/master_vehicle_service';
-import { MasterMainLandMark } from './master_main_landmark_service';
-
 const URL = 'master/main/country';
 
 const ENDPOINTS = {
@@ -52,28 +44,10 @@ export interface MasterMainCountry extends Record<string, unknown> {
   modified_date_time: string;
 
   // Relations - Child
-  // Child - User
-  UserOrganisation?: UserOrganisation[];
-
-  // Relations - Child
-  MasterMainState?: MasterMainState[];
-  MasterMainCurrency?: MasterMainCurrency[];
-  MasterMainTimeZone?: MasterMainTimeZone[];
-  MasterMainLandMark?: MasterMainLandMark[]
-
-  // Child - Main
-  MasterVehicle?: MasterVehicle[];
 
   // Relations - Child Count
   _count?: {
-    UserOrganisation?: number;
-
-    MasterMainState?: number;
-    MasterMainCurrency?: number;
     MasterMainTimeZone?: number;
-    MasterMainLandMark?: number;
-
-    MasterVehicle?: number;
   };
 }
 

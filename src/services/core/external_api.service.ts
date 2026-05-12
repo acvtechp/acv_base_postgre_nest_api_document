@@ -24,9 +24,6 @@ const ENDPOINTS = {
     // Reports
     daily_report: `${URL}/report/daily`,
     monthly_report: `${URL}/report/monthly`,
-
-    // Cache APIs
-    reset_cache: `${URL}/reset_cache`,
 };
 
 // ApiDataShareManagement Interface
@@ -248,9 +245,4 @@ export const getExternalApiDailyReport = async (data: ExternalApiReportDTO): Pro
 
 export const getExternalApiMonthlyReport = async (data: ExternalApiReportDTO): Promise<FBR<ExternalApiReport[]>> => {
     return apiPost<FBR<ExternalApiReport[]>, ExternalApiReportDTO>(ENDPOINTS.monthly_report, data);
-};
-
-// Cache APIs
-export const resetExternalApiCache = async (): Promise<SBR> => {
-    return apiGet<SBR>(ENDPOINTS.reset_cache);
 };

@@ -1,6 +1,6 @@
 {
   "name": "acv-base-postgre-nest-api-document",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Reusable API SDK built with NestJS, Prisma, Axios, and Zod for ACV BASE POSTGRE frontend",
   "main": "dist/index.js",
   "module": "dist/index.mjs",

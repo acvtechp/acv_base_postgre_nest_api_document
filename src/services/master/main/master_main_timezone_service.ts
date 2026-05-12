@@ -18,10 +18,6 @@ import { Status } from '../../../core/Enums';
 
 // Other Models
 import { MasterMainCountry } from '../../../services/master/main/master_main_country_service';
-import { UserOrganisation } from '../../../services/main/users/user_organisation_service';
-import { MasterDevice } from 'src/services/main/devices/master_device_service';
-import { User } from 'src/services/main/users/user_service';
-import { MasterVehicle } from 'src/services/main/vehicle/master_vehicle_service';
 
 const URL = 'master/main/time_zone';
 
@@ -58,24 +54,6 @@ export interface MasterMainTimeZone extends Record<string, unknown> {
   country_id: string;
   MasterMainCountry?: MasterMainCountry;
   country_name?: string;
-
-  // Relations - Child
-  // Child - User
-  UserOrganisation?: UserOrganisation[]
-  User?: User[]
-
-  // Child - Main
-  MasterVehicle?: MasterVehicle[]
-  MasterDevice?: MasterDevice[]
-
-  // Relations - Child Count
-  _count?: {
-    UserOrganisation?: number;
-    User?: number;
-
-    MasterVehicle?: number;
-    MasterDevice?: number;
-  };
 }
 
 // MasterMainTimeZone Create/Update Schema
