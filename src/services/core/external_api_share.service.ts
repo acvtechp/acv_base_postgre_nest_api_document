@@ -1,6 +1,6 @@
 // Axios
-import { apiGet } from 'src/core/apiCall';
-import { FBR } from 'src/core/BaseResponse';
+import { apiGet } from '../../core/apiCall';
+import { FBR } from '../../core/BaseResponse';
 
 const URL = 'external_api_share';
 

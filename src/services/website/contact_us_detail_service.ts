@@ -1,6 +1,6 @@
 // Axios
 import { apiPost, apiPatch, apiDelete } from '../../core/apiCall';
-import { SBR, FBR } from '../../core/BaseResponse';
+import { FBR, CUBR, DBR } from '../../core/BaseResponse';
 
 // Zod
 import { z } from 'zod';
@@ -18,61 +18,75 @@ import { Status } from '../../core/EnumsDB';
 const URL = 'website/contact_us_detail';
 
 const ENDPOINTS = {
+  // ContactUsDetail APIs
   find: `${URL}/search`,
   create: URL,
   update: (id: string): string => `${URL}/${id}`,
   delete: (id: string): string => `${URL}/${id}`,
 };
 
-// Contact Us Detail Interface
+// ContactUsDetail Interface
 export interface ContactUsDetail extends Record<string, unknown> {
-  // Primary Fields
+  // Primary Field
   contact_us_details_id: string;
-  mobile_number?: string; // Max: 20
-  email?: string; // Max: 100
-  facebook_link?: string; // Max: 200
-  twitter_link?: string; // Max: 200
-  instagram_link?: string; // Max: 200
-  youtube_link?: string; // Max: 200
-  linkedin_link?: string; // Max: 200
-  pinterest_link?: string; // Max: 200
-  whats_app_chat_url?: string; // Max: 200
-  telegram_chat_url?: string; // Max: 200
+
+  // Main Field Details
+  mobile_number?: string;
+  email?: string;
+  facebook_link?: string;
+  twitter_link?: string;
+  instagram_link?: string;
+  youtube_link?: string;
+  linkedin_link?: string;
+  pinterest_link?: string;
+  whats_app_chat_url?: string;
+  telegram_chat_url?: string;
 
   // Metadata
   status: Status;
   added_date_time: string;
   modified_date_time: string;
+
+  // Relations - Parent
+
+  // Relations - Child
+
+  // Relations - Child Count
+  _count?: {
+    
+  };
 }
 
 // ContactUsDetail Create/Update Schema
 export const ContactUsDetailSchema = z.object({
+  // Main Field Details
   mobile_number: stringOptional('Mobile Number', 0, 15),
   email: stringOptional('Email', 0, 100),
-  facebook_link: stringOptional('Facebook Link', 0, 200),
-  twitter_link: stringOptional('Twitter Link', 0, 200),
-  instagram_link: stringOptional('Instagram Link', 0, 200),
-  youtube_link: stringOptional('Youtube Link', 0, 200),
-  linkedin_link: stringOptional('Linkedin Link', 0, 200),
-  pinterest_link: stringOptional('Pinterest Link', 0, 200),
-  whats_app_chat_url: stringOptional('Whatsapp Chat URL', 0, 200),
-  telegram_chat_url: stringOptional('Telegram Chat URL', 0, 200),
+  facebook_link: stringOptional('Facebook Link', 0, 300),
+  twitter_link: stringOptional('Twitter Link', 0, 300),
+  instagram_link: stringOptional('Instagram Link', 0, 300),
+  youtube_link: stringOptional('Youtube Link', 0, 300),
+  linkedin_link: stringOptional('Linkedin Link', 0, 300),
+  pinterest_link: stringOptional('Pinterest Link', 0, 300),
+  whats_app_chat_url: stringOptional('Whatsapp Chat URL', 0, 300),
+  telegram_chat_url: stringOptional('Telegram Chat URL', 0, 300),
+
+  // Metadata
   status: enumMandatory('Status', Status, Status.Active),
 });
 export type ContactUsDetailDTO = z.infer<typeof ContactUsDetailSchema>;
 
-// ✅ Contact Us Detail Query Schema
+// ContactUsDetail Query Schema
 export const ContactUsDetailQuerySchema = BaseQuerySchema.extend({
-  contact_us_details_ids: multi_select_optional('Contact Us Details'), // ✅ Multi-selection -> ContactUsDetail
+  // Self Table
+  contact_us_details_ids: multi_select_optional('ContactUsDetail'), // Multi-selection -> ContactUsDetail
 });
 export type ContactUsDetailQueryDTO = z.infer<
   typeof ContactUsDetailQuerySchema
 >;
 
 // Convert existing data to a payload structure
-export const toContactUsDetailPayload = (
-  detail: ContactUsDetail
-): ContactUsDetailDTO => ({
+export const toContactUsDetailPayload = (detail: ContactUsDetail): ContactUsDetailDTO => ({
   mobile_number: detail.mobile_number ?? '',
   email: detail.email ?? '',
   facebook_link: detail.facebook_link ?? '',
@@ -102,28 +116,18 @@ export const newContactUsDetailPayload = (): ContactUsDetailDTO => ({
 });
 
 // API Methods
-export const findContactUsDetails = async (
-  data: ContactUsDetailQueryDTO
-): Promise<FBR<ContactUsDetail[]>> => {
-  return apiPost<FBR<ContactUsDetail[]>, ContactUsDetailQueryDTO>(
-    ENDPOINTS.find,
-    data
-  );
+export const findContactUsDetail = async (data: ContactUsDetailQueryDTO): Promise<FBR<ContactUsDetail[]>> => {
+  return apiPost<FBR<ContactUsDetail[]>, ContactUsDetailQueryDTO>(ENDPOINTS.find,data);
 };
 
-export const createContactUsDetail = async (
-  data: ContactUsDetailDTO
-): Promise<SBR> => {
-  return apiPost<SBR, ContactUsDetailDTO>(ENDPOINTS.create, data);
+export const createContactUsDetail = async (data: ContactUsDetailDTO): Promise<CUBR<ContactUsDetail>> => {
+  return apiPost<CUBR<ContactUsDetail>, ContactUsDetailDTO>(ENDPOINTS.create, data);
 };
 
-export const updateContactUsDetail = async (
-  id: string,
-  data: ContactUsDetailDTO
-): Promise<SBR> => {
-  return apiPatch<SBR, ContactUsDetailDTO>(ENDPOINTS.update(id), data);
+export const updateContactUsDetail = async (id: string,data: ContactUsDetailDTO): Promise<CUBR<ContactUsDetail>> => {
+  return apiPatch<CUBR<ContactUsDetail>, ContactUsDetailDTO>(ENDPOINTS.update(id), data);
 };
 
-export const deleteContactUsDetail = async (id: string): Promise<SBR> => {
-  return apiDelete<SBR>(ENDPOINTS.delete(id));
+export const deleteContactUsDetail = async (id: string): Promise<DBR> => {
+  return apiDelete<DBR>(ENDPOINTS.delete(id));
 };

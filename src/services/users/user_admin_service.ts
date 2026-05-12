@@ -1,9 +1,9 @@
 // Axios
 import { apiPost, apiPatch, apiDelete, apiGet } from "src/core/apiCall";
-import { FBR, SBR } from "src/core/BaseResponse";
+import { AWSPresignedUrl, BaseCommonFile, BR, CUBR, DBR, FBR, SBR } from "src/core/BaseResponse";
 
 // Zod
-import { BaseQuerySchema } from "src/zod_utils/zod_base_schema";
+import { BaseFileSchema, BaseQuerySchema, FilePresignedUrlDTO } from "src/zod_utils/zod_base_schema";
 import {
   stringOptional,
   stringMandatory,
@@ -11,6 +11,8 @@ import {
   multi_select_optional,
   enumArrayOptional,
   getAllEnums,
+  single_select_optional,
+  nestedArrayOfObjectsOptional,
 } from "src/zod_utils/zod_utils";
 import { z } from "zod";
 
@@ -20,6 +22,17 @@ import { AdminRole, Status } from "src/core/EnumsDB";
 const URL = "admin";
 
 const ENDPOINTS = {
+  // AWS S3 PRESIGNED
+  admin_image_presigned_url: (fileName: string): string => `${URL}/admin_image_presigned_url/${fileName}`,
+  user_admin_file_presigned_url: `${URL}/user_admin_file_presigned_url`,
+
+  // File Uploads
+  update_admin_image: (id: string): string => `${URL}/update_admin_image/${id}`,
+  remove_admin_image: (id: string): string => `${URL}/remove_admin_image/${id}`,
+
+  create_user_admin_file: `${URL}/create_user_admin_file`,
+  remove_user_admin_file: (id: string): string => `${URL}/remove_user_admin_file/${id}`,
+
   // UserAdmin APIs
   find: `${URL}/search`,
   create: URL,
@@ -29,20 +42,13 @@ const ENDPOINTS = {
   // Profile APIs
   update_profile: (id: string): string => `${URL}/update_profile/${id}`,
 
-  // Admin Image APIs
-  admin_image_presigned_url: (file_name: string): string =>
-    `${URL}/admin_image_presigned_url/${file_name}`,
-  update_admin_image: (id: string): string => `${URL}/update_admin_image/${id}`,
-
-  remove_admin_image: (id: string): string => `${URL}/remove_admin_image/${id}`,
-
   // Cache APIs
   cache: `${URL}/cache`,
 };
 
 // UserAdmin Interface
 export interface UserAdmin extends Record<string, unknown> {
-  // Primary Fields
+  // Primary Field
   admin_id: string;
 
   // Profile Image/Logo
@@ -64,13 +70,31 @@ export interface UserAdmin extends Record<string, unknown> {
   added_date_time: string;
   modified_date_time: string;
 
+  // Relations - Parent
+
   // Relations - Child
   UserAdminLoginPush?: UserAdminLoginPush[];
+  UserAdminFile?: UserAdminFile[]
 
   // Relations - Child Count
   _count?: {
     UserAdminLoginPush?: number;
+    UserAdminFile?: number;
   };
+}
+
+// UserAdminFile Interface
+export interface UserAdminFile extends BaseCommonFile {
+  // Primary Field
+  admin_file_id: string;
+
+  // Relations - Parent
+  admin_id?: string;
+  UserAdmin?: UserAdmin;
+  admin_details?: string;
+  admin_image_url?: string;
+
+  // Usage Type -> Aadhaar Front Image, Aadhaar Back Image,  Pan Image
 }
 
 // UserAdminLoginPush Interface
@@ -110,6 +134,13 @@ export interface UserAdminLoginPush extends Record<string, unknown> {
   modified_date_time: string;
 }
 
+// UserAdmin File Schema
+export const UserAdminFileSchema = BaseFileSchema.extend({
+  // Relations - Parent
+  admin_id: single_select_optional("UserAdmin"), // Single-Selection -> UserAdmin
+});
+export type UserAdminFileDTO = z.infer<typeof UserAdminFileSchema>;
+
 // UserAdmin Create/Update Schema
 export const UserAdminSchema = z.object({
   // Profile Image/Logo
@@ -121,12 +152,18 @@ export const UserAdminSchema = z.object({
   admin_name: stringMandatory("Admin Name", 3, 100),
   email: stringMandatory("Email", 3, 100),
   password: stringOptional("Password", 0, 20),
-  mobile: stringOptional("Mobile", 0, 15),
-
+  mobile: stringOptional("Password", 0, 15),
   admin_role: enumMandatory("Admin Role", AdminRole, AdminRole.MasterAdmin),
 
   // Metadata
   status: enumMandatory("Status", Status, Status.Active),
+
+  // Files
+  UserAdminFileSchema: nestedArrayOfObjectsOptional(
+    "UserAdminFileSchema",
+    UserAdminFileSchema,
+    [],
+  ),
 });
 export type UserAdminDTO = z.infer<typeof UserAdminSchema>;
 
@@ -139,7 +176,7 @@ export const UserAdminLogoSchema = z.object({
 });
 export type UserAdminLogoDTO = z.infer<typeof UserAdminLogoSchema>;
 
-// UserAdmin Profile Schema
+// UserAdmin Update Profile Schema
 export const UserAdminProfileSchema = z.object({
   // Profile Image/Logo
   admin_image_url: stringOptional("Admin Image URL", 0, 300),
@@ -149,14 +186,14 @@ export const UserAdminProfileSchema = z.object({
   // Main Field Details
   admin_name: stringMandatory("Admin Name", 3, 100),
   email: stringMandatory("Email", 3, 100),
-  mobile: stringOptional("Mobile", 0, 15),
+  mobile: stringOptional("Password", 0, 15),
 });
 export type UserAdminProfileDTO = z.infer<typeof UserAdminProfileSchema>;
 
 // UserAdmin Query Schema
 export const UserAdminQuerySchema = BaseQuerySchema.extend({
   // Self Table
-  admin_ids: multi_select_optional("UserAdmin"),
+  admin_ids: multi_select_optional("UserAdmin"), // Multi-Selection -> UserAdmin
 
   // Enums
   admin_role: enumArrayOptional(
@@ -181,6 +218,27 @@ export const toUserAdminPayload = (row: UserAdmin): UserAdminDTO => ({
   admin_role: row.admin_role || AdminRole.MasterAdmin,
 
   status: row.status || Status.Active,
+
+  UserAdminFileSchema:
+    row.UserAdminFile?.map((file) => ({
+      admin_file_id: file.admin_file_id || "",
+
+      usage_type: file.usage_type,
+
+      file_type: file.file_type,
+      file_url: file.file_url || "",
+      file_key: file.file_key || "",
+      file_name: file.file_name || "",
+      file_description: file.file_description || "",
+      file_size: file.file_size || 0,
+      file_metadata: file.file_metadata || {},
+
+      status: file.status,
+      added_date_time: file.added_date_time,
+      modified_date_time: file.modified_date_time,
+
+      admin_id: file.admin_id ?? "",
+    })) ?? [],
 });
 
 // Create New UserAdmin Payload
@@ -196,58 +254,57 @@ export const newUserAdminPayload = (): UserAdminDTO => ({
 
   admin_role: AdminRole.MasterAdmin,
 
+  UserAdminFileSchema: [],
+
   status: Status.Active,
 });
 
+// AWS S3 PRESIGNED
+export const get_admin_image_presigned_url = async (fileName: string): Promise<BR<AWSPresignedUrl>> => {
+  return apiGet<BR<AWSPresignedUrl>>(ENDPOINTS.admin_image_presigned_url(fileName));
+};
+
+export const get_user_admin_file_presigned_url = async (data: FilePresignedUrlDTO): Promise<BR<AWSPresignedUrl>> => {
+  return apiPost<BR<AWSPresignedUrl>, FilePresignedUrlDTO>(ENDPOINTS.user_admin_file_presigned_url, data);
+};
+
+// File Uploads
+export const update_admin_image = async (id: string, data: UserAdminLogoDTO): Promise<SBR> => {
+  return apiPatch<SBR, UserAdminLogoDTO>(ENDPOINTS.update_admin_image(id), data);
+};
+
+export const remove_admin_image = async (id: string): Promise<SBR> => {
+  return apiDelete<SBR>(ENDPOINTS.remove_admin_image(id));
+};
+
+export const create_user_admin_file = async (data: UserAdminFileDTO): Promise<SBR> => {
+  return apiPost<SBR, UserAdminFileDTO>(ENDPOINTS.create_user_admin_file, data);
+};
+
+export const remove_user_admin_file = async (id: string): Promise<SBR> => {
+  return apiDelete<SBR>(ENDPOINTS.remove_user_admin_file(id));
+};
+
 // UserAdmin APIs
-export const findUserAdmins = async (
-  data: UserAdminQueryDTO,
-): Promise<FBR<UserAdmin[]>> => {
+export const findUserAdmins = async (data: UserAdminQueryDTO): Promise<FBR<UserAdmin[]>> => {
   return apiPost<FBR<UserAdmin[]>, UserAdminQueryDTO>(ENDPOINTS.find, data);
 };
 
-export const createUserAdmin = async (data: UserAdminDTO): Promise<SBR> => {
-  return apiPost<SBR, UserAdminDTO>(ENDPOINTS.create, data);
+export const createUserAdmin = async (data: UserAdminDTO): Promise<CUBR<UserAdmin>> => {
+  return apiPost<CUBR<UserAdmin>, UserAdminDTO>(ENDPOINTS.create, data);
 };
 
-export const updateUserAdmin = async (
-  id: string,
-  data: UserAdminDTO,
-): Promise<SBR> => {
-  return apiPatch<SBR, UserAdminDTO>(ENDPOINTS.update(id), data);
+export const updateUserAdmin = async (id: string,data: UserAdminDTO): Promise<CUBR<UserAdmin>> => {
+  return apiPatch<CUBR<UserAdmin>, UserAdminDTO>(ENDPOINTS.update(id), data);
 };
 
-export const deleteUserAdmin = async (id: string): Promise<SBR> => {
-  return apiDelete<SBR>(ENDPOINTS.delete(id));
+export const deleteUserAdmin = async (id: string): Promise<DBR> => {
+  return apiDelete<DBR>(ENDPOINTS.delete(id));
 };
 
 // Update Profile
-export const updateUserAdminProfile = async (
-  id: string,
-  data: UserAdminProfileDTO,
-): Promise<SBR> => {
+export const updateUserAdminProfile = async (id: string,data: UserAdminProfileDTO): Promise<SBR> => {
   return apiPatch<SBR, UserAdminProfileDTO>(ENDPOINTS.update_profile(id), data);
-};
-
-// Admin Image APIs
-export const getAdminImagePresignedUrl = async (
-  file_name: string,
-): Promise<FBR<any>> => {
-  return apiGet<FBR<any>>(ENDPOINTS.admin_image_presigned_url(file_name));
-};
-
-export const updateAdminImage = async (
-  id: string,
-  data: UserAdminLogoDTO,
-): Promise<SBR> => {
-  return apiPatch<SBR, UserAdminLogoDTO>(
-    ENDPOINTS.update_admin_image(id),
-    data,
-  );
-};
-
-export const removeAdminImage = async (id: string): Promise<SBR> => {
-  return apiDelete<SBR>(ENDPOINTS.remove_admin_image(id));
 };
 
 // Cache APIs

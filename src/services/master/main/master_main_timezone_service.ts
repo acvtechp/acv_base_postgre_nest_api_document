@@ -1,6 +1,6 @@
 // Axios
 import { apiGet, apiPost, apiPatch, apiDelete } from '../../../core/apiCall';
-import { SBR, FBR } from '../../../core/BaseResponse';
+import { FBR, CUBR, DBR } from '../../../core/BaseResponse';
 
 // Zod
 import { z } from 'zod';
@@ -14,7 +14,7 @@ import {
 import { BaseQuerySchema } from '../../../zod_utils/zod_base_schema';
 
 // Enums
-import { Status } from '../../../core/EnumsBase';
+import { Status } from '../../../core/EnumsDB';
 
 // Other Models
 import { MasterMainCountry } from '../../../services/master/main/master_main_country_service';
@@ -35,7 +35,7 @@ const ENDPOINTS = {
 
 // MasterMainTimeZone Interface
 export interface MasterMainTimeZone extends Record<string, unknown> {
-  // Primary Fields
+  // Primary Field
   time_zone_id: string;
 
   // Main Field Details
@@ -54,6 +54,13 @@ export interface MasterMainTimeZone extends Record<string, unknown> {
   country_id: string;
   MasterMainCountry?: MasterMainCountry;
   country_name?: string;
+
+  // Relations - Child
+
+  // Relations - Child Count
+  _count?: {
+    
+  };
 }
 
 // MasterMainTimeZone Create/Update Schema
@@ -120,16 +127,16 @@ export const findMasterMainTimeZones = async (data: MasterMainTimeZoneQueryDTO):
   return apiPost<FBR<MasterMainTimeZone[]>, MasterMainTimeZoneQueryDTO>(ENDPOINTS.find, data);
 };
 
-export const createMasterMainTimeZone = async (data: MasterMainTimeZoneDTO): Promise<SBR> => {
-  return apiPost<SBR, MasterMainTimeZoneDTO>(ENDPOINTS.create, data);
+export const createMasterMainTimeZone = async (data: MasterMainTimeZoneDTO): Promise<CUBR<MasterMainTimeZone>> => {
+  return apiPost<CUBR<MasterMainTimeZone>, MasterMainTimeZoneDTO>(ENDPOINTS.create, data);
 };
 
-export const updateMasterMainTimeZone = async (id: string, data: MasterMainTimeZoneDTO): Promise<SBR> => {
-  return apiPatch<SBR, MasterMainTimeZoneDTO>(ENDPOINTS.update(id), data);
+export const updateMasterMainTimeZone = async (id: string, data: MasterMainTimeZoneDTO): Promise<CUBR<MasterMainTimeZone>> => {
+  return apiPatch<CUBR<MasterMainTimeZone>, MasterMainTimeZoneDTO>(ENDPOINTS.update(id), data);
 };
 
-export const deleteMasterMainTimeZone = async (id: string): Promise<SBR> => {
-  return apiDelete<SBR>(ENDPOINTS.delete(id));
+export const deleteMasterMainTimeZone = async (id: string): Promise<DBR> => {
+  return apiDelete<DBR>(ENDPOINTS.delete(id));
 };
 
 // Cache APIs

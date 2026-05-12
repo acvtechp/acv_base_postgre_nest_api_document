@@ -52,7 +52,6 @@ export const AdminLoginSchema = z.object({
   browser_version: stringOptional("browser_version", 0, 60),
   app_version: stringOptional("app_version", 0, 40),
 });
-
 export type AdminLoginDTO = z.infer<typeof AdminLoginSchema>;
 
 // AdminLogout Schema
@@ -61,7 +60,6 @@ export const AdminLogoutSchema = z.object({
 
   device_id: stringOptional("device_id", 0, 120),
 });
-
 export type AdminLogoutDTO = z.infer<typeof AdminLogoutSchema>;
 
 // Admin Login Response Interface
@@ -82,13 +80,8 @@ export interface AdminLoginResponse extends Record<string, unknown> {
 }
 
 // Admin Change Password
-export const adminChangePassword = async (
-  data: AdminChangePasswordDTO,
-): Promise<SBR> => {
-  return apiPost<SBR, AdminChangePasswordDTO>(
-    ENDPOINTS.admin_change_password,
-    data,
-  );
+export const adminChangePassword = async (data: AdminChangePasswordDTO): Promise<SBR> => {
+  return apiPost<SBR, AdminChangePasswordDTO>(ENDPOINTS.admin_change_password,data);
 };
 
 // Admin Login

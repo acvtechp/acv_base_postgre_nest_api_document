@@ -1,6 +1,6 @@
 // Axios
 import { apiPost, apiPatch, apiDelete } from '../../core/apiCall';
-import { SBR, FBR } from '../../core/BaseResponse';
+import { FBR, CUBR, DBR } from '../../core/BaseResponse';
 
 // Zod
 import { z } from 'zod';
@@ -15,43 +15,59 @@ import { BaseQuerySchema } from '../../zod_utils/zod_base_schema';
 import { Status } from '../../core/EnumsDB';
 
 // URL and Endpoints
-const URL = 'website/static_pages';
+const URL = 'website/static_page';
 
 const ENDPOINTS = {
+  // StaticPage APIs
   find: `${URL}/search`,
   create: URL,
   update: (id: string): string => `${URL}/${id}`,
   delete: (id: string): string => `${URL}/${id}`,
 };
 
-// Static Page Interface
+// StaticPage Interface
 export interface StaticPage extends Record<string, unknown> {
-  // Primary Fields
+  // Primary Field
   page_id: string;
-  page_name?: string; // Max: 50
-  page_code?: string; // Max: 50
-  page_url?: string; // Max: 200
-  page_content?: string; // Max: 500
+
+  // Main Field Details
+  page_name?: string;
+  page_code?: string;
+  page_url?: string;
+  page_content?: string;
 
   // Metadata
   status: Status;
   added_date_time: string;
   modified_date_time: string;
+
+  // Relations - Parent
+
+  // Relations - Child
+
+  // Relations - Child Count
+  _count?: {
+    
+  };
 }
 
-// ✅ Static Page Create/Update Schema
+// StaticPage Create/Update Schema
 export const StaticPageSchema = z.object({
-  page_name: stringOptional('Page Name', 0, 50),
-  page_code: stringOptional('Page Code', 0, 50),
-  page_url: stringOptional('Page URL', 0, 200),
-  page_content: stringOptional('Page Content', 0, 500),
+  // Main Field Details
+  page_name: stringOptional('Page Name', 0, 100),
+  page_code: stringOptional('Page Code', 0, 100),
+  page_url: stringOptional('Page URL', 0, 300),
+  page_content: stringOptional('Page Content', 0, 5000),
+
+  // Metadata
   status: enumMandatory('Status', Status, Status.Active),
 });
 export type StaticPageDTO = z.infer<typeof StaticPageSchema>;
 
-// ✅ Static Page Query Schema
+// StaticPage Query Schema
 export const StaticPageQuerySchema = BaseQuerySchema.extend({
-  page_ids: multi_select_optional('Page'), // ✅ Multi-selection -> StaticPage
+  // Self Table
+  page_ids: multi_select_optional('StaticPage'), // Multi-selection -> StaticPage
 });
 export type StaticPageQueryDTO = z.infer<typeof StaticPageQuerySchema>;
 
@@ -74,23 +90,18 @@ export const newStaticPagePayload = (): StaticPageDTO => ({
 });
 
 // API Methods
-export const findStaticPages = async (
-  data: StaticPageQueryDTO
-): Promise<FBR<StaticPage[]>> => {
+export const findStaticPages = async (data: StaticPageQueryDTO): Promise<FBR<StaticPage[]>> => {
   return apiPost<FBR<StaticPage[]>, StaticPageQueryDTO>(ENDPOINTS.find, data);
 };
 
-export const createStaticPage = async (data: StaticPageDTO): Promise<SBR> => {
-  return apiPost<SBR, StaticPageDTO>(ENDPOINTS.create, data);
+export const createStaticPage = async (data: StaticPageDTO): Promise<CUBR<StaticPage>> => {
+  return apiPost<CUBR<StaticPage>, StaticPageDTO>(ENDPOINTS.create, data);
 };
 
-export const updateStaticPage = async (
-  id: string,
-  data: StaticPageDTO
-): Promise<SBR> => {
-  return apiPatch<SBR, StaticPageDTO>(ENDPOINTS.update(id), data);
+export const updateStaticPage = async (id: string,data: StaticPageDTO): Promise<CUBR<StaticPage>> => {
+  return apiPatch<CUBR<StaticPage>, StaticPageDTO>(ENDPOINTS.update(id), data);
 };
 
-export const deleteStaticPage = async (id: string): Promise<SBR> => {
-  return apiDelete<SBR>(ENDPOINTS.delete(id));
+export const deleteStaticPage = async (id: string): Promise<DBR> => {
+  return apiDelete<DBR>(ENDPOINTS.delete(id));
 };

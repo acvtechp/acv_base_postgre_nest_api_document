@@ -1,6 +1,6 @@
 // Axios
 import { apiPost, apiPatch, apiDelete } from '../../core/apiCall';
-import { SBR, FBR, CUBR, DBR } from '../../core/BaseResponse';
+import { FBR, CUBR, DBR } from '../../core/BaseResponse';
 
 // Zod
 import { z } from 'zod';
@@ -18,6 +18,7 @@ import { Status } from '../../core/EnumsDB';
 const URL = 'website/faq';
 
 const ENDPOINTS = {
+  // FAQ APIs
   find: `${URL}/search`,
   create: URL,
   update: (id: string): string => `${URL}/${id}`,
@@ -26,35 +27,50 @@ const ENDPOINTS = {
 
 // FAQ Interface
 export interface FAQ extends Record<string, unknown> {
-  // Primary Fields
+  // Primary Field
   faq_id: string;
-  faq_section?: string; // Max: 50
-  faq_header?: string; // Max: 50
-  faq_content?: string; // Max: 200
+
+  // Main Field Details
+  faq_section?: string;
+  faq_header?: string;
+  faq_content?: string;
 
   // Metadata
   status: Status;
   added_date_time: string;
   modified_date_time: string;
+
+  // Relations - Parent
+
+  // Relations - Child
+
+  // Relations - Child Count
+  _count?: {
+    
+  };
 }
 
-// ✅ FAQ Create/Update Schema
-export const FaqSchema = z.object({
-  faq_section: stringOptional('FAQ Section', 0, 50),
-  faq_header: stringOptional('FAQ Header', 0, 50),
-  faq_content: stringOptional('FAQ Content', 0, 200),
+// FAQ Create/Update Schema
+export const FAQSchema = z.object({
+  // Main Field Details
+  faq_section: stringOptional('FAQ Section', 0, 100),
+  faq_header: stringOptional('FAQ Header', 0, 100),
+  faq_content: stringOptional('FAQ Content', 0, 2000),
+
+  // Metadata
   status: enumMandatory('Status', Status, Status.Active),
 });
-export type FaqDTO = z.infer<typeof FaqSchema>;
+export type FAQDTO = z.infer<typeof FAQSchema>;
 
-// ✅ FAQ Query Schema
-export const FaqQuerySchema = BaseQuerySchema.extend({
-  faq_ids: multi_select_optional('FAQ'), // ✅ Multi-selection -> FAQ
+// FAQ Query Schema
+export const FAQQuerySchema = BaseQuerySchema.extend({
+  // Self Table
+  faq_ids: multi_select_optional('FAQ'), // Multi-selection -> FAQ
 });
-export type FaqQueryDTO = z.infer<typeof FaqQuerySchema>;
+export type FAQQueryDTO = z.infer<typeof FAQQuerySchema>;
 
 // Convert existing data to a payload structure
-export const toFaqPayload = (faq: FAQ): FaqDTO => ({
+export const toFaqPayload = (faq: FAQ): FAQDTO => ({
   faq_section: faq.faq_section ?? '',
   faq_header: faq.faq_header ?? '',
   faq_content: faq.faq_content ?? '',
@@ -62,7 +78,7 @@ export const toFaqPayload = (faq: FAQ): FaqDTO => ({
 });
 
 // Generate a new payload with default values
-export const newFaqPayload = (): FaqDTO => ({
+export const newFaqPayload = (): FAQDTO => ({
   faq_section: '',
   faq_header: '',
   faq_content: '',
@@ -70,18 +86,18 @@ export const newFaqPayload = (): FaqDTO => ({
 });
 
 // API Methods
-export const findFaqs = async (data: FaqQueryDTO): Promise<FBR<FAQ[]>> => {
-  return apiPost<FBR<FAQ[]>, FaqQueryDTO>(ENDPOINTS.find, data);
+export const findFAQ = async (data: FAQQueryDTO): Promise<FBR<FAQ[]>> => {
+  return apiPost<FBR<FAQ[]>, FAQQueryDTO>(ENDPOINTS.find, data);
 };
 
-export const createFaq = async (data: FaqDTO): Promise<CUBR<FAQ>> => {
-  return apiPost<CUBR<FAQ>, FaqDTO>(ENDPOINTS.create, data);
+export const createFAQ = async (data: FAQDTO): Promise<CUBR<FAQ>> => {
+  return apiPost<CUBR<FAQ>, FAQDTO>(ENDPOINTS.create, data);
 };
 
-export const updateFaq = async (id: string, data: FaqDTO): Promise<CUBR<FAQ>> => {
-  return apiPatch<CUBR<FAQ>, FaqDTO>(ENDPOINTS.update(id), data);
+export const updateFAQ = async (id: string, data: FAQDTO): Promise<CUBR<FAQ>> => {
+  return apiPatch<CUBR<FAQ>, FAQDTO>(ENDPOINTS.update(id), data);
 };
 
-export const deleteFaq = async (id: string): Promise<DBR> => {
+export const deleteFAQ = async (id: string): Promise<DBR> => {
   return apiDelete<DBR>(ENDPOINTS.delete(id));
 };

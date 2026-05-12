@@ -1,6 +1,6 @@
 // Axios
-import { apiGet } from 'src/core/apiCall';
-import { SBR } from 'src/core/BaseResponse';
+import { apiGet } from '../../core/apiCall';
+import { CUBR } from '../../core/BaseResponse';
 
 const URL = 'core_mail';
 
@@ -11,10 +11,10 @@ const ENDPOINTS = {
 };
 
 // MailAPIs
-export const send_test_text_mail = async (email_id: string): Promise<SBR> => {
-    return apiGet<SBR>(ENDPOINTS.send_test_text_mail(email_id));
+export const send_test_text_mail = async (email_id: string): Promise<CUBR> => {
+    return apiGet<CUBR>(ENDPOINTS.send_test_text_mail(email_id));
 };
 
-export const send_test_html_mail = async (email_id: string): Promise<SBR> => {
-    return apiGet<SBR>(ENDPOINTS.send_test_html_mail(email_id));
+export const send_test_html_mail = async (email_id: string): Promise<CUBR> => {
+    return apiGet<CUBR>(ENDPOINTS.send_test_html_mail(email_id));
 };

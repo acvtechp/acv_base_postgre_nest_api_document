@@ -1,6 +1,6 @@
 // Axios
 import { apiGet, apiPost, apiPatch, apiDelete } from '../../../core/apiCall';
-import { SBR, FBR } from '../../../core/BaseResponse';
+import { FBR, CUBR, DBR } from '../../../core/BaseResponse';
 
 // Zod
 import { z } from 'zod';
@@ -12,9 +12,7 @@ import {
 import { BaseQuerySchema } from '../../../zod_utils/zod_base_schema';
 
 // Enums
-import { Status } from '../../../core/EnumsBase';
-
-// Other Models
+import { Status } from '../../../core/EnumsDB';
 
 const URL = 'master/main/date_format';
 
@@ -31,7 +29,7 @@ const ENDPOINTS = {
 
 // MasterMainDateFormat Interface
 export interface MasterMainDateFormat extends Record<string, unknown> {
-  // Primary Fields
+  // Primary Field
   date_format_id: string;
 
   // Main Field Details
@@ -43,9 +41,14 @@ export interface MasterMainDateFormat extends Record<string, unknown> {
   added_date_time: string;
   modified_date_time: string;
 
+  // Relations - Parent
+
   // Relations - Child
 
   // Relations - Child Count
+  _count?: {
+    
+  };
 }
 
 // MasterMainDateFormat Create/Update Schema
@@ -91,16 +94,16 @@ export const findMasterMainDateFormats = async (data: MasterMainDateFormatQueryD
   return apiPost<FBR<MasterMainDateFormat[]>, MasterMainDateFormatQueryDTO>(ENDPOINTS.find, data);
 };
 
-export const createMasterMainDateFormat = async (data: MasterMainDateFormatDTO): Promise<SBR> => {
-  return apiPost<SBR, MasterMainDateFormatDTO>(ENDPOINTS.create, data);
+export const createMasterMainDateFormat = async (data: MasterMainDateFormatDTO): Promise<CUBR<MasterMainDateFormat>> => {
+  return apiPost<CUBR<MasterMainDateFormat>, MasterMainDateFormatDTO>(ENDPOINTS.create, data);
 };
 
-export const updateMasterMainDateFormat = async (id: string, data: MasterMainDateFormatDTO): Promise<SBR> => {
-  return apiPatch<SBR, MasterMainDateFormatDTO>(ENDPOINTS.update(id), data);
+export const updateMasterMainDateFormat = async (id: string, data: MasterMainDateFormatDTO): Promise<CUBR<MasterMainDateFormat>> => {
+  return apiPatch<CUBR<MasterMainDateFormat>, MasterMainDateFormatDTO>(ENDPOINTS.update(id), data);
 };
 
-export const deleteMasterMainDateFormat = async (id: string): Promise<SBR> => {
-  return apiDelete<SBR>(ENDPOINTS.delete(id));
+export const deleteMasterMainDateFormat = async (id: string): Promise<DBR> => {
+  return apiDelete<DBR>(ENDPOINTS.delete(id));
 };
 
 // Cache APIs

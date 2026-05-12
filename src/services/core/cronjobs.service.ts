@@ -1,14 +1,14 @@
 // Axios
-import { apiPost, apiGet } from 'src/core/apiCall';
-import { FBR, SBR } from 'src/core/BaseResponse';
+import { apiPost, apiGet } from '../../core/apiCall';
+import { FBR, CUBR } from '../../core/BaseResponse';
 
 // Zod
 import { z } from 'zod';
-import { enumArrayOptional, multi_select_optional } from 'src/zod_utils/zod_utils';
-import { BaseQuerySchema } from 'src/zod_utils/zod_base_schema';
+import { enumArrayOptional, multi_select_optional } from '../../zod_utils/zod_utils';
+import { BaseQuerySchema } from '../../zod_utils/zod_base_schema';
 
 // Enums
-import { YesNo, Status, ExecutionStatus, RunType } from 'src/core/EnumsDB';
+import { YesNo, Status, ExecutionStatus, RunType } from '../../core/EnumsDB';
 
 const URL = 'cronjobs';
 
@@ -26,7 +26,7 @@ const ENDPOINTS = {
 
 // CronJobLog Interface
 export interface CronJobLog extends Record<string, unknown> {
-    // Primary Fields
+    // Primary Field
     cron_job_log_id: string;
 
     // Main Field Details
@@ -59,7 +59,7 @@ export interface CronJobLog extends Record<string, unknown> {
 
 // CronJobList Interface
 export interface CronJobList extends Record<string, unknown> {
-    // Primary Fields
+    // Primary Field
     cron_job_id: string;
 
     // Main Field Details
@@ -139,18 +139,18 @@ export const getCronJobLog = async (data: CronJobLogQueryDTO): Promise<FBR<CronJ
 };
 
 // Control APIs
-export const runCronJobNow = async (cron_name: string): Promise<SBR> => {
-    return apiGet<SBR>(ENDPOINTS.cron_job_run_now(cron_name));
+export const runCronJobNow = async (cron_name: string): Promise<CUBR> => {
+    return apiGet<CUBR>(ENDPOINTS.cron_job_run_now(cron_name));
 };
 
-export const enableCronJob = async (cron_name: string): Promise<SBR> => {
-    return apiGet<SBR>(ENDPOINTS.cron_job_enable(cron_name));
+export const enableCronJob = async (cron_name: string): Promise<CUBR> => {
+    return apiGet<CUBR>(ENDPOINTS.cron_job_enable(cron_name));
 };
 
-export const disableCronJob = async (cron_name: string): Promise<SBR> => {
-    return apiGet<SBR>(ENDPOINTS.cron_job_disable(cron_name));
+export const disableCronJob = async (cron_name: string): Promise<CUBR> => {
+    return apiGet<CUBR>(ENDPOINTS.cron_job_disable(cron_name));
 };
 
-export const resetCronJobs = async (): Promise<SBR> => {
-    return apiGet<SBR>(ENDPOINTS.cron_jobs_reset);
+export const resetCronJobs = async (): Promise<CUBR> => {
+    return apiGet<CUBR>(ENDPOINTS.cron_jobs_reset);
 };
