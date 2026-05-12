@@ -39,8 +39,6 @@ export interface CronJobLog extends Record<string, unknown> {
     end_date_time?: string;
     end_date_time_f?: string;
 
-    duration_f?: string;
-
     success_details?: string;
     error_details?: string;
 
@@ -55,6 +53,13 @@ export interface CronJobLog extends Record<string, unknown> {
     app_name?: string;
     cron_name?: string;
     is_latest_run: YesNo;
+
+    // Relations - Child
+
+    // Relations - Child Count
+    _count?: {
+
+    };
 }
 
 // CronJobList Interface
@@ -64,10 +69,10 @@ export interface CronJobList extends Record<string, unknown> {
 
     // Main Field Details
     app_name: string;
+    job_name: string;
+
     category_name?: string;
     sub_category_name?: string;
-
-    job_name: string;
     job_description?: string;
 
     cron_name?: string;
@@ -98,6 +103,8 @@ export interface CronJobList extends Record<string, unknown> {
     added_date_time: string;
     modified_date_time: string;
 
+    // Relations - Parent
+
     // Relations - Child
     CronJobLog?: CronJobLog[];
 
@@ -109,24 +116,24 @@ export interface CronJobList extends Record<string, unknown> {
 
 // Monitor / History Query
 export const CronMonitorQuerySchema = BaseQuerySchema.extend({
-    is_enabled: enumArrayOptional('Is Enabled', YesNo),
-    run_type: enumArrayOptional('Run Type', RunType),
-    execution_status: enumArrayOptional('Execution Status', ExecutionStatus),
+  // Enums
+  is_enabled: enumArrayOptional('Is Enabled', YesNo),
+  run_type: enumArrayOptional('Run Type', RunType),
+  execution_status: enumArrayOptional('Execution Status', ExecutionStatus),
 });
 export type CronMonitorQueryDTO = z.infer<typeof CronMonitorQuerySchema>;
 
 // CronJobLog Query
 export const CronJobLogQuerySchema = BaseQuerySchema.extend({
-    // Relations - Parent
-    cron_job_ids: multi_select_optional('CronJobList'), // Multi-selection -> CronJobList
+  // Relations - Parent
+  cron_job_ids: multi_select_optional('CronJobList'), // Multi-selection -> CronJobList
 
-    // Enums
-    run_type: enumArrayOptional('Run Type', RunType),
-    execution_status: enumArrayOptional('Execution Status', ExecutionStatus),
-    is_latest_run: enumArrayOptional('Is Latest Run', YesNo),
+  // Enums
+  run_type: enumArrayOptional('Run Type', RunType),
+  execution_status: enumArrayOptional('Execution Status', ExecutionStatus),
+  is_latest_run: enumArrayOptional('Is Latest Run', YesNo),
 });
 export type CronJobLogQueryDTO = z.infer<typeof CronJobLogQuerySchema>;
-
 
 // Monitor APIs
 export const getCronJobMonitor = async (data: CronMonitorQueryDTO): Promise<FBR<CronJobList[]>> => {

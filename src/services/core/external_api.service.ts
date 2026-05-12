@@ -30,15 +30,15 @@ const ENDPOINTS = {
   update: (id: string): string => `${URL}/${id}`,
   delete: (id: string): string => `${URL}/${id}`,
 
-  hit_log_find: `${URL}/data_share_hit_log/search`,
+  data_share_log_find: `${URL}/data_share_log/search`,
 
   // Reports
   daily_report: `${URL}/report/daily`,
   monthly_report: `${URL}/report/monthly`,
 };
 
-// ApiDataShareManagement Interface
-export interface ApiDataShareManagement extends Record<string, unknown> {
+// APIDataShare Interface
+export interface APIDataShare extends Record<string, unknown> {
   // Primary Field
   api_data_share_id: string;
 
@@ -55,6 +55,7 @@ export interface ApiDataShareManagement extends Record<string, unknown> {
   auth_type: APIAuthType;
 
   api_key?: string;
+
   username?: string;
   password?: string;
 
@@ -71,28 +72,21 @@ export interface ApiDataShareManagement extends Record<string, unknown> {
   // Relations - Parent
 
   // Relations - Child
-  ApiDataShareHitLog?: ApiDataShareHitLog[];
+  APIDataShareLog?: APIDataShareLog[];
 
+  // Relations - Child Count
   _count?: {
-    ApiDataShareHitLog?: number;
+    APIDataShareLog?: number;
   };
 }
 
-// ApiDataShareHitLog Interface
-export interface ApiDataShareHitLog extends Record<string, unknown> {
+// APIDataShareLog Interface
+export interface APIDataShareLog extends Record<string, unknown> {
   // Primary Field
-  api_data_share_hit_log_id: string;
-
-  // Relations - Parent
-  api_data_share_id: string;
-  ApiDataShareManagement?: ApiDataShareManagement;
-  api_name?: string;
-  vendor_name?: string;
+  api_data_share_log_id: string;
 
   // Request info
   request_date_time: string;
-  request_date_time_f?: string;
-
   request_id?: string;
   ip_address?: string;
   user_agent?: string;
@@ -104,94 +98,91 @@ export interface ApiDataShareHitLog extends Record<string, unknown> {
   status: Status;
   added_date_time: string;
   modified_date_time: string;
+
+  // Relations - Parent
+  api_data_share_id: string;
+  APIDataShare?: APIDataShare;
+  api_name?: string;
+  vendor_name?: string;
+
+  // Relations - Child
+
+  // Relations - Child Count
+  _count?: {
+
+  };
 }
 
-// ExternalApiReport Interface
-export interface ExternalApiReport extends Record<string, unknown> {
-  api_name: string;
-  vendor_name: string;
-
-  success_count: number;
-  failed_count: number;
-  total_count: number;
-}
-
-// ApiDataShareManagement Create/Update Schema
-export const ApiDataShareManagementSchema = z.object({
+// APIDataShare Create/Update Schema
+export const APIDataShareSchema = z.object({
   // Main Field Details
-  api_name: stringMandatory("API Name", 3, 100),
-  vendor_name: stringMandatory("Vendor Name", 3, 100),
-  purpose: stringOptional("Purpose", 0, 200),
-  description: stringOptional("Description", 0, 500),
+  api_name: stringMandatory('API Name', 3, 100),
+  vendor_name: stringMandatory('Vendor Name', 3, 100),
+  purpose: stringOptional('Purpose', 0, 200),
+  description: stringOptional('Description', 0, 500),
 
   // Control
-  is_enabled: enumOptional("Is Enabled", YesNo, YesNo.Yes),
+  is_enabled: enumOptional('Is Enabled', YesNo, YesNo.Yes),
 
   // Authentication
-  auth_type: enumOptional("Auth Type", APIAuthType, APIAuthType.API_KEY),
+  auth_type: enumOptional('Auth Type', APIAuthType, APIAuthType.API_KEY),
 
-  api_key: stringOptional("API Key", 0, 100),
+  api_key: stringOptional('API Key', 0, 100),
 
-  username: stringOptional("Username", 0, 100),
-  password: stringOptional("Password", 0, 100),
+  username: stringOptional('Username', 0, 100),
+  password: stringOptional('Password', 0, 255),
 
   // Rate limit
-  rate_limit_rpm: numberMandatory("Rate Limit rpm"),
-  allowed_ips: stringArrayMandatory("Allowed IPs", 0, 100),
+  rate_limit_rpm: numberMandatory('Rate Limit rpm'),
+  allowed_ips: stringArrayMandatory('Allowed IPs', 0, 100),
 
   // Metadata
-  status: enumMandatory("Status", Status, Status.Active),
+  status: enumMandatory('Status', Status, Status.Active),
 });
-export type ApiDataShareManagementDTO = z.infer<
-  typeof ApiDataShareManagementSchema
->;
+export type APIDataShareDTO = z.infer<typeof APIDataShareSchema>;
 
-// ApiDataShareManagement Query Schema
-export const ApiDataShareManagementQuerySchema = BaseQuerySchema.extend({
+// APIDataShare Query Schema
+export const APIDataShareQuerySchema = BaseQuerySchema.extend({
   // Self Table
-  api_data_share_ids: multi_select_optional("ApiDataShareManagement"), // Multi-selection -> ApiDataShareManagement
+  api_data_share_ids: multi_select_optional('APIDataShare'), // Multi-selection -> APIDataShare
 
   // Enums
-  is_enabled: enumArrayOptional("Is Enabled", YesNo, getAllEnums(YesNo)),
+  is_enabled: enumArrayOptional('Is Enabled', YesNo, getAllEnums(YesNo)),
   auth_type: enumArrayOptional(
-    "Auth Type",
+    'Auth Type',
     APIAuthType,
     getAllEnums(APIAuthType),
   ),
 });
-export type ApiDataShareManagementQueryDTO = z.infer<
-  typeof ApiDataShareManagementQuerySchema
->;
+export type APIDataShareQueryDTO = z.infer<typeof APIDataShareQuerySchema>;
 
-// ApiDataShareHitLog Query Schema
-export const ApiDataShareHitLogQuerySchema = BaseQuerySchema.extend({
+// APIDataShareLog Query Schema
+export const APIDataShareLogQuerySchema = BaseQuerySchema.extend({
   // Self Table
-  api_data_share_hit_log_ids: multi_select_optional("ApiDataShareHitLog"), // Multi-selection -> ApiDataShareHitLog
+  api_data_share_log_ids: multi_select_optional('APIDataShareLog'), // Multi-selection -> APIDataShareLog
 
   // Relations - Parent
-  api_data_share_ids: multi_select_optional("ApiDataShareManagement"), // Multi-selection -> ApiDataShareManagement
+  api_data_share_ids: multi_select_optional('APIDataShare'), // Multi-selection -> APIDataShare
 
   // Enums
   is_auth_success: enumArrayOptional(
-    "Is Auth Success",
+    'Is Auth Success',
     YesNo,
     getAllEnums(YesNo),
   ),
 });
-export type ApiDataShareHitLogQueryDTO = z.infer<
-  typeof ApiDataShareHitLogQuerySchema
+export type APIDataShareLogQueryDTO = z.infer<
+  typeof APIDataShareLogQuerySchema
 >;
 
-// External API Report Schema
-export const ExternalApiReportSchema = z.object({
-  date: dateMandatory("Date"),
+// APIDataShare Report Schema
+export const APIDataShareReportSchema = z.object({
+  date: dateMandatory('Date'),
 });
-export type ExternalApiReportDTO = z.infer<typeof ExternalApiReportSchema>;
+export type APIDataShareReportDTO = z.infer<typeof APIDataShareReportSchema>;
 
-// Convert ApiDataShareManagement Data to API Payload
-export const toApiDataShareManagementPayload = (
-  row: ApiDataShareManagement,
-): ApiDataShareManagementDTO => ({
+// Convert ApiDataShare Data to API Payload
+export const toApiDataShareManagementPayload = (row: APIDataShare): APIDataShareDTO => ({
   api_name: row.api_name || "",
   vendor_name: row.vendor_name || "",
   purpose: row.purpose || "",
@@ -210,9 +201,8 @@ export const toApiDataShareManagementPayload = (
   status: row.status || Status.Active,
 });
 
-// Create New ApiDataShareManagement Payload
-export const newApiDataShareManagementPayload =
-  (): ApiDataShareManagementDTO => ({
+// Create New ApiDataSharePayload
+export const newApiDataSharePayload =(): APIDataShareDTO => ({
     api_name: "",
     vendor_name: "",
     purpose: "",
@@ -231,17 +221,17 @@ export const newApiDataShareManagementPayload =
     status: Status.Active,
   });
 
-// ApiDataShareManagement APIs
-export const findApiDataShareManagement = async (data: ApiDataShareManagementQueryDTO): Promise<FBR<ApiDataShareManagement[]>> => {
-  return apiPost<FBR<ApiDataShareManagement[]>, ApiDataShareManagementQueryDTO>(ENDPOINTS.find,data);
+// ApiDataShare APIs
+export const findApiDataShareManagement = async (data: APIDataShareQueryDTO): Promise<FBR<APIDataShare[]>> => {
+  return apiPost<FBR<APIDataShare[]>, APIDataShareQueryDTO>(ENDPOINTS.find,data);
 };
 
-export const createApiDataShareManagement = async (data: ApiDataShareManagementDTO): Promise<CUBR<ApiDataShareManagement>> => {
-  return apiPost<CUBR<ApiDataShareManagement>, ApiDataShareManagementDTO>(ENDPOINTS.create, data);
+export const createApiDataShareManagement = async (data: APIDataShareDTO): Promise<CUBR<APIDataShare>> => {
+  return apiPost<CUBR<APIDataShare>, APIDataShareDTO>(ENDPOINTS.create, data);
 };
 
-export const updateApiDataShareManagement = async (id: string,data: ApiDataShareManagementDTO): Promise<CUBR<ApiDataShareManagement>> => {
-  return apiPatch<CUBR<ApiDataShareManagement>, ApiDataShareManagementDTO>(ENDPOINTS.update(id), data);
+export const updateApiDataShareManagement = async (id: string,data: APIDataShareDTO): Promise<CUBR<APIDataShare>> => {
+  return apiPatch<CUBR<APIDataShare>, APIDataShareDTO>(ENDPOINTS.update(id), data);
 };
 
 export const deleteApiDataShareManagement = async (id: string): Promise<DBR> => {
@@ -249,15 +239,15 @@ export const deleteApiDataShareManagement = async (id: string): Promise<DBR> => 
 };
 
 // Hit Log APIs
-export const findApiDataShareHitLog = async (data: ApiDataShareHitLogQueryDTO): Promise<FBR<ApiDataShareHitLog[]>> => {
-  return apiPost<FBR<ApiDataShareHitLog[]>, ApiDataShareHitLogQueryDTO>(ENDPOINTS.hit_log_find,data);
+export const findApiDataShareLog = async (data: APIDataShareLogQueryDTO): Promise<FBR<APIDataShareLog[]>> => {
+  return apiPost<FBR<APIDataShareLog[]>, APIDataShareLogQueryDTO>(ENDPOINTS.data_share_log_find,data);
 };
 
 // Reports
-export const getExternalApiDailyReport = async (data: ExternalApiReportDTO): Promise<FBR<ExternalApiReport[]>> => {
-  return apiPost<FBR<ExternalApiReport[]>, ExternalApiReportDTO>(ENDPOINTS.daily_report,data);
+export const getExternalApiDailyReport = async (data: APIDataShareReportDTO): Promise<FBR<APIDataShare[]>> => {
+  return apiPost<FBR<APIDataShare[]>, APIDataShareReportDTO>(ENDPOINTS.daily_report,data);
 };
 
-export const getExternalApiMonthlyReport = async (data: ExternalApiReportDTO): Promise<FBR<ExternalApiReport[]>> => {
-  return apiPost<FBR<ExternalApiReport[]>, ExternalApiReportDTO>(ENDPOINTS.monthly_report,data);
+export const getExternalApiMonthlyReport = async (data: APIDataShareReportDTO): Promise<FBR<APIDataShare[]>> => {
+  return apiPost<FBR<APIDataShare[]>, APIDataShareReportDTO>(ENDPOINTS.monthly_report,data);
 };

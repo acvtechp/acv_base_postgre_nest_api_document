@@ -29,7 +29,6 @@ export const AdminChangePasswordSchema = z.object({
   new_password: stringMandatory("New Password", 3, 20),
   confirm_new_password: stringMandatory("Confirm New Password", 3, 20),
 });
-
 export type AdminChangePasswordDTO = z.infer<typeof AdminChangePasswordSchema>;
 
 // AdminLogin Schema

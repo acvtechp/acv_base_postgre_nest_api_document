@@ -102,14 +102,7 @@ export interface UserAdminLoginPush extends Record<string, unknown> {
   // Primary Fields
   admin_login_push_id: string;
 
-  // Relations - Parent
-  admin_id: string;
-  UserAdmin?: UserAdmin;
-
-  admin_details?: string;
-  admin_image_url?: string;
-
-  // Main Fields
+  // Main Field Details
   fcm_token: string;
 
   platform: string;
@@ -132,6 +125,19 @@ export interface UserAdminLoginPush extends Record<string, unknown> {
   status: Status;
   added_date_time: string;
   modified_date_time: string;
+
+  // Relations - Parent
+  admin_id: string;
+  UserAdmin?: UserAdmin;
+  admin_details?: string;
+  admin_image_url?: string;
+
+  // Relations - Child
+
+  // Relations - Child Count
+  _count?: {
+    
+  };
 }
 
 // UserAdmin File Schema
