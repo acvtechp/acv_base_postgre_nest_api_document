@@ -1,6 +1,6 @@
 // Axios
-import { apiPost } from "src/core/apiCall";
-import { SBR } from "src/core/BaseResponse";
+import { apiPost } from '../../core/apiCall';
+import { SBR } from "../../core/BaseResponse";
 
 // Zod
 import { z } from "zod";
