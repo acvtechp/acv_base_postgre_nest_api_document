@@ -20,7 +20,7 @@ import { BaseQuerySchema } from "../../zod_utils/zod_base_schema";
 
 // Enums
 import { YesNo, Status, APIAuthType } from "../../core/EnumsDB";
-import { APIDataShare, APIDataShareLog } from "../../models/models";
+import { APIDataShare, APIDataShareLog } from '../../core/Models';
 
 const URL = "external_api";
 

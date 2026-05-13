@@ -2,21 +2,9 @@
 import { apiGet, apiPost, apiPatch, apiDelete } from '../../../core/apiCall';
 import { FBR, CUBR, DBR } from '../../../core/BaseResponse';
 
-// Zod
-import { z } from 'zod';
-import {
-  stringMandatory,
-  enumMandatory,
-  multi_select_optional,
-  stringUUIDMandatory,
-} from '../../../zod_utils/zod_utils';
-import { BaseQuerySchema } from '../../../zod_utils/zod_base_schema';
-
-// Enums
-import { Status } from '../../../core/EnumsDB';
-
 // Other Models
-import { MasterMainCountry } from 'src/models/models';
+import { MasterMainCountry } from '../../../core/Models';
+import { MasterMainCountryQueryDTO, MasterMainCountryDTO } from '../../../core/ZodSchemas';
 
 const URL = 'master/main/country';
 
@@ -31,50 +19,6 @@ const ENDPOINTS = {
   cache: `${URL}/cache`,
   cache_child: `${URL}/cache_child`,
 };
-
-// MasterMainCountry Create/Update Schema
-export const MasterMainCountrySchema = z.object({
-  // Main Field Details
-  country_name: stringMandatory('Country Name', 3, 100),
-  country_code: stringMandatory('Country Code', 1, 10),
-  country_mobile_code: stringMandatory('Country Mobile Code', 1, 10),
-
-  // Metadata
-  status: enumMandatory('Status', Status, Status.Active),
-});
-export type MasterMainCountryDTO = z.infer<typeof MasterMainCountrySchema>;
-
-// MasterMainCountry Query Schema
-export const MasterMainCountryQuerySchema = BaseQuerySchema.extend({
-  // Self Table
-  country_ids: multi_select_optional('Country'), // Multi-selection -> MasterMainCountry
-});
-export type MasterMainCountryQueryDTO = z.infer<
-  typeof MasterMainCountryQuerySchema
->;
-
-export const FindCacheCountrySchema = z.object({
-  country_id: stringUUIDMandatory('country_id'),
-});
-export type FindCacheCountryDTO = z.infer<typeof FindCacheCountrySchema>;
-
-// Convert MasterMainCountry Data to API Payload
-export const toMasterMainCountryPayload = (row: MasterMainCountry): MasterMainCountryDTO => ({
-  country_name: row.country_name || '',
-  country_code: row.country_code || '',
-  country_mobile_code: row.country_mobile_code || '',
-
-  status: row.status || Status.Active,
-});
-
-// Create New MasterMainCountry Payload
-export const newMasterMainCountryPayload = (): MasterMainCountryDTO => ({
-  country_name: '',
-  country_code: '',
-  country_mobile_code: '',
-
-  status: Status.Active,
-});
 
 // MasterMainCountry APIs
 export const findMasterMainCountry = async (data: MasterMainCountryQueryDTO): Promise<FBR<MasterMainCountry[]>> => {

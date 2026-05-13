@@ -1,3 +1,8 @@
+// ***************************************************
+// *                   ENUMS                         *
+// ***************************************************
+
+// Common
 export enum Status {
   Active = 'Active',
   Inactive = 'Inactive',
@@ -24,6 +29,7 @@ export enum LoginFrom {
   iOSPWA = 'iOSPWA',
 }
 
+// Cronjobs
 export enum ExecutionStatus {
   REGISTERED = 'REGISTERED',
   FIRED = 'FIRED',
@@ -37,11 +43,14 @@ export enum RunType {
   MANUAL = 'MANUAL',
 }
 
+// EXTERNAL APIS
 export enum APIAuthType {
   API_KEY = 'API_KEY',
   BASIC_AUTH = 'BASIC_AUTH',
 }
 
+// Users
+// User Admin
 export enum AdminRole {
   MasterAdmin = 'MasterAdmin',
   Admin = 'Admin',
