@@ -1,9 +1,9 @@
 // Axios
-import { apiPost, apiPatch, apiDelete, apiGet } from "src/core/apiCall";
-import { AWSPresignedUrl, BaseCommonFile, BR, CUBR, DBR, FBR, SBR } from "src/core/BaseResponse";
+import { apiPost, apiPatch, apiDelete, apiGet } from "../../core/apiCall";
+import { AWSPresignedUrl, BaseCommonFile, BR, CUBR, DBR, FBR, SBR } from "../../core/BaseResponse";
 
 // Zod
-import { BaseFileSchema, BaseQuerySchema, FilePresignedUrlDTO } from "src/zod_utils/zod_base_schema";
+import { BaseFileSchema, BaseQuerySchema, FilePresignedUrlDTO } from "../../zod_utils/zod_base_schema";
 import {
   stringOptional,
   stringMandatory,
@@ -13,11 +13,14 @@ import {
   getAllEnums,
   single_select_optional,
   nestedArrayOfObjectsOptional,
-} from "src/zod_utils/zod_utils";
+} from "../../zod_utils/zod_utils";
 import { z } from "zod";
 
 // Enums
-import { AdminRole, Status } from "src/core/EnumsDB";
+import { AdminRole, Status } from "../../core/EnumsDB";
+
+// Other Models
+import { UserAdmin } from "src/models/models";
 
 const URL = "admin";
 
@@ -45,100 +48,6 @@ const ENDPOINTS = {
   // Cache APIs
   cache: `${URL}/cache`,
 };
-
-// UserAdmin Interface
-export interface UserAdmin extends Record<string, unknown> {
-  // Primary Field
-  admin_id: string;
-
-  // Profile Image/Logo
-  admin_image_url?: string;
-  admin_image_key?: string;
-  admin_image_name?: string;
-
-  // Main Field Details
-  admin_name: string;
-  email: string;
-  mobile?: string;
-  password?: string;
-  admin_role: AdminRole;
-
-  admin_details?: string;
-
-  // Metadata
-  status: Status;
-  added_date_time: string;
-  modified_date_time: string;
-
-  // Relations - Parent
-
-  // Relations - Child
-  UserAdminLoginPush?: UserAdminLoginPush[];
-  UserAdminFile?: UserAdminFile[]
-
-  // Relations - Child Count
-  _count?: {
-    UserAdminLoginPush?: number;
-    UserAdminFile?: number;
-  };
-}
-
-// UserAdminFile Interface
-export interface UserAdminFile extends BaseCommonFile {
-  // Primary Field
-  admin_file_id: string;
-
-  // Relations - Parent
-  admin_id: string;
-  UserAdmin?: UserAdmin;
-  admin_details?: string;
-  admin_image_url?: string;
-
-  // Usage Type -> Aadhaar Front Image, Aadhaar Back Image,  Pan Image
-}
-
-// UserAdminLoginPush Interface
-export interface UserAdminLoginPush extends Record<string, unknown> {
-  // Primary Fields
-  admin_login_push_id: string;
-
-  // Main Field Details
-  fcm_token: string;
-
-  platform: string;
-
-  user_agent?: string;
-  ip_address?: string;
-
-  device_id?: string;
-  device_model?: string;
-
-  os_name?: string;
-  os_version?: string;
-
-  browser_name?: string;
-  browser_version?: string;
-
-  app_version?: string;
-
-  // Metadata
-  status: Status;
-  added_date_time: string;
-  modified_date_time: string;
-
-  // Relations - Parent
-  admin_id: string;
-  UserAdmin?: UserAdmin;
-  admin_details?: string;
-  admin_image_url?: string;
-
-  // Relations - Child
-
-  // Relations - Child Count
-  _count?: {
-    
-  };
-}
 
 // UserAdmin File Schema
 export const UserAdminFileSchema = BaseFileSchema.extend({

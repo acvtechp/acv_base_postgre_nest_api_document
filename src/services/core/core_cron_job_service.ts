@@ -9,9 +9,9 @@ import { BaseQuerySchema } from '../../zod_utils/zod_base_schema';
 
 // Enums
 import { YesNo, ExecutionStatus, RunType } from '../../core/EnumsDB';
-import { CronJobList, CronJobLog } from 'src/models/models';
+import { CronJobList, CronJobLog } from '../../models/models';
 
-const URL = 'cronjobs';
+const URL = 'core_cron_job';
 
 const ENDPOINTS = {
     // CronJob APIs

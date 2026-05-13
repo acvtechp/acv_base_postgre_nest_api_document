@@ -14,6 +14,9 @@ import { BaseQuerySchema } from '../../zod_utils/zod_base_schema';
 // Enums
 import { Status } from '../../core/EnumsDB';
 
+// Other Models
+import { ContactUsDetail } from '../../models/models';
+
 // URL and Endpoints
 const URL = 'website/contact_us_detail';
 
@@ -24,38 +27,6 @@ const ENDPOINTS = {
   update: (id: string): string => `${URL}/${id}`,
   delete: (id: string): string => `${URL}/${id}`,
 };
-
-// ContactUsDetail Interface
-export interface ContactUsDetail extends Record<string, unknown> {
-  // Primary Field
-  contact_us_details_id: string;
-
-  // Main Field Details
-  mobile_number?: string;
-  email?: string;
-  facebook_link?: string;
-  twitter_link?: string;
-  instagram_link?: string;
-  youtube_link?: string;
-  linkedin_link?: string;
-  pinterest_link?: string;
-  whats_app_chat_url?: string;
-  telegram_chat_url?: string;
-
-  // Metadata
-  status: Status;
-  added_date_time: string;
-  modified_date_time: string;
-
-  // Relations - Parent
-
-  // Relations - Child
-
-  // Relations - Child Count
-  _count?: {
-    
-  };
-}
 
 // ContactUsDetail Create/Update Schema
 export const ContactUsDetailSchema = z.object({
@@ -115,7 +86,7 @@ export const newContactUsDetailPayload = (): ContactUsDetailDTO => ({
   status: Status.Active,
 });
 
-// API Methods
+// ContactUsDetail APIs
 export const findContactUsDetail = async (data: ContactUsDetailQueryDTO): Promise<FBR<ContactUsDetail[]>> => {
   return apiPost<FBR<ContactUsDetail[]>, ContactUsDetailQueryDTO>(ENDPOINTS.find,data);
 };

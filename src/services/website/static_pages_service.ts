@@ -14,6 +14,9 @@ import { BaseQuerySchema } from '../../zod_utils/zod_base_schema';
 // Enums
 import { Status } from '../../core/EnumsDB';
 
+// Other Models
+import { StaticPage } from '../../models/models';
+
 // URL and Endpoints
 const URL = 'website/static_page';
 
@@ -24,32 +27,6 @@ const ENDPOINTS = {
   update: (id: string): string => `${URL}/${id}`,
   delete: (id: string): string => `${URL}/${id}`,
 };
-
-// StaticPage Interface
-export interface StaticPage extends Record<string, unknown> {
-  // Primary Field
-  page_id: string;
-
-  // Main Field Details
-  page_name?: string;
-  page_code?: string;
-  page_url?: string;
-  page_content?: string;
-
-  // Metadata
-  status: Status;
-  added_date_time: string;
-  modified_date_time: string;
-
-  // Relations - Parent
-
-  // Relations - Child
-
-  // Relations - Child Count
-  _count?: {
-    
-  };
-}
 
 // StaticPage Create/Update Schema
 export const StaticPageSchema = z.object({
@@ -89,8 +66,8 @@ export const newStaticPagePayload = (): StaticPageDTO => ({
   status: Status.Active,
 });
 
-// API Methods
-export const findStaticPages = async (data: StaticPageQueryDTO): Promise<FBR<StaticPage[]>> => {
+// StaticPage APIs
+export const findStaticPage = async (data: StaticPageQueryDTO): Promise<FBR<StaticPage[]>> => {
   return apiPost<FBR<StaticPage[]>, StaticPageQueryDTO>(ENDPOINTS.find, data);
 };
 

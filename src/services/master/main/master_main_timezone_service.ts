@@ -17,7 +17,7 @@ import { BaseQuerySchema } from '../../../zod_utils/zod_base_schema';
 import { Status } from '../../../core/EnumsDB';
 
 // Other Models
-import { MasterMainCountry } from '../../../services/master/main/master_main_country_service';
+import { MasterMainTimeZone } from 'src/models/models';
 
 const URL = 'master/main/time_zone';
 
@@ -32,36 +32,6 @@ const ENDPOINTS = {
   cache_all: `${URL}/cache_all`,
   cache: (country_id: string): string => `${URL}/cache?country_id=${country_id}`,
 };
-
-// MasterMainTimeZone Interface
-export interface MasterMainTimeZone extends Record<string, unknown> {
-  // Primary Field
-  time_zone_id: string;
-
-  // Main Field Details
-  time_zone_code: string;
-  time_zone_identifier?: string;
-  time_zone_abbrevation: string;
-  time_zone_offset: string;
-  time_zone_offset_seconds: number;
-
-  // Metadata
-  status: Status;
-  added_date_time: string;
-  modified_date_time: string;
-
-  // Relations - Parent
-  country_id: string;
-  MasterMainCountry?: MasterMainCountry;
-  country_name?: string;
-
-  // Relations - Child
-
-  // Relations - Child Count
-  _count?: {
-    
-  };
-}
 
 // MasterMainTimeZone Create/Update Schema
 export const MasterMainTimeZoneSchema = z.object({
@@ -123,7 +93,7 @@ export const newMasterMainTimeZonePayload = (): MasterMainTimeZoneDTO => ({
 });
 
 // MasterMainTimeZone APIs
-export const findMasterMainTimeZones = async (data: MasterMainTimeZoneQueryDTO): Promise<FBR<MasterMainTimeZone[]>> => {
+export const findMasterMainTimeZone = async (data: MasterMainTimeZoneQueryDTO): Promise<FBR<MasterMainTimeZone[]>> => {
   return apiPost<FBR<MasterMainTimeZone[]>, MasterMainTimeZoneQueryDTO>(ENDPOINTS.find, data);
 };
 
@@ -140,11 +110,11 @@ export const deleteMasterMainTimeZone = async (id: string): Promise<DBR> => {
 };
 
 // Cache APIs
-export const getMasterMainTimeZoneCacheAll = async (): Promise<FBR<MasterMainTimeZone[]>> => {
+export const getCacheAllMasterMainTimeZone = async (): Promise<FBR<MasterMainTimeZone[]>> => {
   return apiGet<FBR<MasterMainTimeZone[]>>(ENDPOINTS.cache_all);
 };
 
-export const getMasterMainTimeZoneCache = async (country_id: string): Promise<FBR<MasterMainTimeZone[]>> => {
+export const getCacheMasterMainTimeZone = async (country_id: string): Promise<FBR<MasterMainTimeZone[]>> => {
   return apiGet<FBR<MasterMainTimeZone[]>>(ENDPOINTS.cache(country_id));
 };
 

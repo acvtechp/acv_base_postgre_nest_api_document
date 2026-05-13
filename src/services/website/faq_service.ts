@@ -14,6 +14,9 @@ import { BaseQuerySchema } from '../../zod_utils/zod_base_schema';
 // Enums
 import { Status } from '../../core/EnumsDB';
 
+// Other Models
+import { FAQ } from '../../models/models';
+
 // URL and Endpoints
 const URL = 'website/faq';
 
@@ -24,31 +27,6 @@ const ENDPOINTS = {
   update: (id: string): string => `${URL}/${id}`,
   delete: (id: string): string => `${URL}/${id}`,
 };
-
-// FAQ Interface
-export interface FAQ extends Record<string, unknown> {
-  // Primary Field
-  faq_id: string;
-
-  // Main Field Details
-  faq_section?: string;
-  faq_header?: string;
-  faq_content?: string;
-
-  // Metadata
-  status: Status;
-  added_date_time: string;
-  modified_date_time: string;
-
-  // Relations - Parent
-
-  // Relations - Child
-
-  // Relations - Child Count
-  _count?: {
-    
-  };
-}
 
 // FAQ Create/Update Schema
 export const FAQSchema = z.object({
@@ -85,7 +63,7 @@ export const newFaqPayload = (): FAQDTO => ({
   status: Status.Active,
 });
 
-// API Methods
+// FAQ APIs
 export const findFAQ = async (data: FAQQueryDTO): Promise<FBR<FAQ[]>> => {
   return apiPost<FBR<FAQ[]>, FAQQueryDTO>(ENDPOINTS.find, data);
 };

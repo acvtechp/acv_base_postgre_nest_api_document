@@ -20,6 +20,7 @@ import { BaseQuerySchema } from "../../zod_utils/zod_base_schema";
 
 // Enums
 import { YesNo, Status, APIAuthType } from "../../core/EnumsDB";
+import { APIDataShare, APIDataShareLog } from "../../models/models";
 
 const URL = "external_api";
 
@@ -36,82 +37,6 @@ const ENDPOINTS = {
   get_external_apis_daily_report: `${URL}/get_external_apis_daily_report`,
   get_external_apis_monthly_report: `${URL}/get_external_apis_monthly_report`,
 };
-
-// APIDataShare Interface
-export interface APIDataShare extends Record<string, unknown> {
-  // Primary Field
-  api_data_share_id: string;
-
-  // Main Field Details
-  api_name: string;
-  vendor_name: string;
-  purpose?: string;
-  description?: string;
-
-  // Control
-  is_enabled: YesNo;
-
-  // Authentication
-  auth_type: APIAuthType;
-
-  api_key?: string;
-
-  username?: string;
-  password?: string;
-
-  // Rate limit
-  rate_limit_rpm: number;
-
-  allowed_ips: string[];
-
-  // Metadata
-  status: Status;
-  added_date_time: string;
-  modified_date_time: string;
-
-  // Relations - Parent
-
-  // Relations - Child
-  APIDataShareLog?: APIDataShareLog[];
-
-  // Relations - Child Count
-  _count?: {
-    APIDataShareLog?: number;
-  };
-}
-
-// APIDataShareLog Interface
-export interface APIDataShareLog extends Record<string, unknown> {
-  // Primary Field
-  api_data_share_log_id: string;
-
-  // Request info
-  request_date_time: string;
-  request_id?: string;
-  ip_address?: string;
-  user_agent?: string;
-
-  is_auth_success: YesNo;
-  failed_message?: string;
-
-  // Metadata
-  status: Status;
-  added_date_time: string;
-  modified_date_time: string;
-
-  // Relations - Parent
-  api_data_share_id: string;
-  APIDataShare?: APIDataShare;
-  api_name?: string;
-  vendor_name?: string;
-
-  // Relations - Child
-
-  // Relations - Child Count
-  _count?: {
-
-  };
-}
 
 // APIDataShare Create/Update Schema
 export const APIDataShareSchema = z.object({
@@ -222,19 +147,19 @@ export const newApiDataSharePayload = (): APIDataShareDTO => ({
 });
 
 // ApiDataShare APIs
-export const findApiDataShareManagement = async (data: APIDataShareQueryDTO): Promise<FBR<APIDataShare[]>> => {
+export const findApiDataShare = async (data: APIDataShareQueryDTO): Promise<FBR<APIDataShare[]>> => {
   return apiPost<FBR<APIDataShare[]>, APIDataShareQueryDTO>(ENDPOINTS.find, data);
 };
 
-export const createApiDataShareManagement = async (data: APIDataShareDTO): Promise<CUBR<APIDataShare>> => {
+export const createApiDataShare = async (data: APIDataShareDTO): Promise<CUBR<APIDataShare>> => {
   return apiPost<CUBR<APIDataShare>, APIDataShareDTO>(ENDPOINTS.create, data);
 };
 
-export const updateApiDataShareManagement = async (id: string, data: APIDataShareDTO): Promise<CUBR<APIDataShare>> => {
+export const updateApiDataShare = async (id: string, data: APIDataShareDTO): Promise<CUBR<APIDataShare>> => {
   return apiPatch<CUBR<APIDataShare>, APIDataShareDTO>(ENDPOINTS.update(id), data);
 };
 
-export const deleteApiDataShareManagement = async (id: string): Promise<DBR> => {
+export const deleteApiDataShare = async (id: string): Promise<DBR> => {
   return apiDelete<DBR>(ENDPOINTS.delete(id));
 };
 

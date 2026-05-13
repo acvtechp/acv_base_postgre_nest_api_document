@@ -1,8 +1,7 @@
 // Axios
+import { MasterMainCountry, MasterMainDateFormat } from '../../models/models';
 import { apiGet } from '../../core/apiCall';
 import { BR, SBR } from '../../core/BaseResponse';
-import { MasterMainCountry } from './main/master_main_country_service';
-import { MasterMainDateFormat } from './main/master_main_date_format_service';
 
 const URL = 'master';
 

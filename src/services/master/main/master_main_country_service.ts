@@ -16,7 +16,7 @@ import { BaseQuerySchema } from '../../../zod_utils/zod_base_schema';
 import { Status } from '../../../core/EnumsDB';
 
 // Other Models
-import { MasterMainTimeZone } from './master_main_timezone_service';
+import { MasterMainCountry } from 'src/models/models';
 
 const URL = 'master/main/country';
 
@@ -31,32 +31,6 @@ const ENDPOINTS = {
   cache: `${URL}/cache`,
   cache_child: `${URL}/cache_child`,
 };
-
-// MasterMainCountry Interface
-export interface MasterMainCountry extends Record<string, unknown> {
-  // Primary Field
-  country_id: string;
-
-  // Main Field Details
-  country_name: string;
-  country_code: string;
-  country_mobile_code: string;
-
-  // Metadata
-  status: Status;
-  added_date_time: string;
-  modified_date_time: string;
-
-  // Relations - Parent
-
-  // Relations - Child
-  MasterMainTimeZone?: MasterMainTimeZone[];
-
-  // Relations - Child Count
-  _count?: {
-    MasterMainTimeZone?: number;
-  };
-}
 
 // MasterMainCountry Create/Update Schema
 export const MasterMainCountrySchema = z.object({
@@ -120,11 +94,11 @@ export const deleteMasterMainCountry = async (id: string): Promise<DBR> => {
 };
 
 // Cache APIs
-export const getMasterMainCountryCache = async (): Promise<FBR<MasterMainCountry[]>> => {
+export const getCacheMasterMainCountry = async (): Promise<FBR<MasterMainCountry[]>> => {
   return apiGet<FBR<MasterMainCountry[]>>(ENDPOINTS.cache);
 };
 
-export const getMasterMainCountryCacheChild = async (): Promise<FBR<MasterMainCountry[]>> => {
+export const getCacheChildMasterMainCountry = async (): Promise<FBR<MasterMainCountry[]>> => {
   return apiGet<FBR<MasterMainCountry[]>>(ENDPOINTS.cache_child);
 };
 

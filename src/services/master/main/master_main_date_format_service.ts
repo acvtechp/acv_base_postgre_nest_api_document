@@ -14,6 +14,9 @@ import { BaseQuerySchema } from '../../../zod_utils/zod_base_schema';
 // Enums
 import { Status } from '../../../core/EnumsDB';
 
+// Other Models
+import { MasterMainDateFormat } from 'src/models/models';
+
 const URL = 'master/main/date_format';
 
 const ENDPOINTS = {
@@ -26,30 +29,6 @@ const ENDPOINTS = {
   // Cache APIs
   cache: `${URL}/cache`,
 };
-
-// MasterMainDateFormat Interface
-export interface MasterMainDateFormat extends Record<string, unknown> {
-  // Primary Field
-  date_format_id: string;
-
-  // Main Field Details
-  date_format_date: string;
-  date_format_time: string;
-
-  // Metadata
-  status: Status;
-  added_date_time: string;
-  modified_date_time: string;
-
-  // Relations - Parent
-
-  // Relations - Child
-
-  // Relations - Child Count
-  _count?: {
-    
-  };
-}
 
 // MasterMainDateFormat Create/Update Schema
 export const MasterMainDateFormatSchema = z.object({
@@ -90,7 +69,7 @@ export const newMasterMainDateFormatPayload = (): MasterMainDateFormatDTO => ({
 });
 
 // MasterMainDateFormat APIs
-export const findMasterMainDateFormats = async (data: MasterMainDateFormatQueryDTO): Promise<FBR<MasterMainDateFormat[]>> => {
+export const findMasterMainDateFormat = async (data: MasterMainDateFormatQueryDTO): Promise<FBR<MasterMainDateFormat[]>> => {
   return apiPost<FBR<MasterMainDateFormat[]>, MasterMainDateFormatQueryDTO>(ENDPOINTS.find, data);
 };
 
@@ -107,7 +86,7 @@ export const deleteMasterMainDateFormat = async (id: string): Promise<DBR> => {
 };
 
 // Cache APIs
-export const getMasterMainDateFormatCache = async (): Promise<FBR<MasterMainDateFormat[]>> => {
+export const getCacheMasterMainDateFormat = async (): Promise<FBR<MasterMainDateFormat[]>> => {
   return apiGet<FBR<MasterMainDateFormat[]>>(ENDPOINTS.cache);
 };
 
