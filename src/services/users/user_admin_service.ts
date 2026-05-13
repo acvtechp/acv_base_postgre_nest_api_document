@@ -23,8 +23,8 @@ const URL = "admin";
 
 const ENDPOINTS = {
   // AWS S3 PRESIGNED
-  admin_image_presigned_url: (fileName: string): string => `${URL}/admin_image_presigned_url/${fileName}`,
-  user_admin_file_presigned_url: `${URL}/user_admin_file_presigned_url`,
+  get_admin_image_presigned_url: (fileName: string): string => `${URL}/get_admin_image_presigned_url/${fileName}`,
+  get_user_admin_file_presigned_url: `${URL}/get_user_admin_file_presigned_url`,
 
   // File Uploads
   update_admin_image: (id: string): string => `${URL}/update_admin_image/${id}`,
@@ -40,7 +40,7 @@ const ENDPOINTS = {
   delete: (id: string): string => `${URL}/${id}`,
 
   // Profile APIs
-  update_profile: (id: string): string => `${URL}/update_profile/${id}`,
+  update_admin_profile: (id: string): string => `${URL}/update_admin_profile/${id}`,
 
   // Cache APIs
   cache: `${URL}/cache`,
@@ -89,7 +89,7 @@ export interface UserAdminFile extends BaseCommonFile {
   admin_file_id: string;
 
   // Relations - Parent
-  admin_id?: string;
+  admin_id: string;
   UserAdmin?: UserAdmin;
   admin_details?: string;
   admin_image_url?: string;
@@ -267,11 +267,11 @@ export const newUserAdminPayload = (): UserAdminDTO => ({
 
 // AWS S3 PRESIGNED
 export const get_admin_image_presigned_url = async (fileName: string): Promise<BR<AWSPresignedUrl>> => {
-  return apiGet<BR<AWSPresignedUrl>>(ENDPOINTS.admin_image_presigned_url(fileName));
+  return apiGet<BR<AWSPresignedUrl>>(ENDPOINTS.get_admin_image_presigned_url(fileName));
 };
 
 export const get_user_admin_file_presigned_url = async (data: FilePresignedUrlDTO): Promise<BR<AWSPresignedUrl>> => {
-  return apiPost<BR<AWSPresignedUrl>, FilePresignedUrlDTO>(ENDPOINTS.user_admin_file_presigned_url, data);
+  return apiPost<BR<AWSPresignedUrl>, FilePresignedUrlDTO>(ENDPOINTS.get_user_admin_file_presigned_url, data);
 };
 
 // File Uploads
@@ -292,7 +292,7 @@ export const remove_user_admin_file = async (id: string): Promise<SBR> => {
 };
 
 // UserAdmin APIs
-export const findUserAdmins = async (data: UserAdminQueryDTO): Promise<FBR<UserAdmin[]>> => {
+export const findUserAdmin = async (data: UserAdminQueryDTO): Promise<FBR<UserAdmin[]>> => {
   return apiPost<FBR<UserAdmin[]>, UserAdminQueryDTO>(ENDPOINTS.find, data);
 };
 
@@ -309,11 +309,11 @@ export const deleteUserAdmin = async (id: string): Promise<DBR> => {
 };
 
 // Update Profile
-export const updateUserAdminProfile = async (id: string,data: UserAdminProfileDTO): Promise<SBR> => {
-  return apiPatch<SBR, UserAdminProfileDTO>(ENDPOINTS.update_profile(id), data);
+export const update_admin_profile = async (id: string,data: UserAdminProfileDTO): Promise<SBR> => {
+  return apiPatch<SBR, UserAdminProfileDTO>(ENDPOINTS.update_admin_profile(id), data);
 };
 
 // Cache APIs
-export const getUserAdminCache = async (): Promise<FBR<UserAdmin[]>> => {
+export const getCacheUserAdmin = async (): Promise<FBR<UserAdmin[]>> => {
   return apiGet<FBR<UserAdmin[]>>(ENDPOINTS.cache);
 };

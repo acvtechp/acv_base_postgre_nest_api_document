@@ -25,16 +25,16 @@ const URL = "external_api";
 
 const ENDPOINTS = {
   // ApiDataShareManagement APIs
-  find: `${URL}/search`,
-  create: URL,
-  update: (id: string): string => `${URL}/${id}`,
-  delete: (id: string): string => `${URL}/${id}`,
+  find: `${URL}/data_share/search`,
+  create: `${URL}/data_share`,
+  update: (id: string): string => `${URL}/data_share/${id}`,
+  delete: (id: string): string => `${URL}/data_share/${id}`,
 
   data_share_log_find: `${URL}/data_share_log/search`,
 
   // Reports
-  daily_report: `${URL}/report/daily`,
-  monthly_report: `${URL}/report/monthly`,
+  get_external_apis_daily_report: `${URL}/get_external_apis_daily_report`,
+  get_external_apis_monthly_report: `${URL}/get_external_apis_monthly_report`,
 };
 
 // APIDataShare Interface
@@ -202,35 +202,35 @@ export const toApiDataShareManagementPayload = (row: APIDataShare): APIDataShare
 });
 
 // Create New ApiDataSharePayload
-export const newApiDataSharePayload =(): APIDataShareDTO => ({
-    api_name: "",
-    vendor_name: "",
-    purpose: "",
-    description: "",
+export const newApiDataSharePayload = (): APIDataShareDTO => ({
+  api_name: "",
+  vendor_name: "",
+  purpose: "",
+  description: "",
 
-    is_enabled: YesNo.Yes,
-    auth_type: APIAuthType.API_KEY,
+  is_enabled: YesNo.Yes,
+  auth_type: APIAuthType.API_KEY,
 
-    api_key: "",
-    username: "",
-    password: "",
+  api_key: "",
+  username: "",
+  password: "",
 
-    rate_limit_rpm: 10,
-    allowed_ips: [],
+  rate_limit_rpm: 10,
+  allowed_ips: [],
 
-    status: Status.Active,
-  });
+  status: Status.Active,
+});
 
 // ApiDataShare APIs
 export const findApiDataShareManagement = async (data: APIDataShareQueryDTO): Promise<FBR<APIDataShare[]>> => {
-  return apiPost<FBR<APIDataShare[]>, APIDataShareQueryDTO>(ENDPOINTS.find,data);
+  return apiPost<FBR<APIDataShare[]>, APIDataShareQueryDTO>(ENDPOINTS.find, data);
 };
 
 export const createApiDataShareManagement = async (data: APIDataShareDTO): Promise<CUBR<APIDataShare>> => {
   return apiPost<CUBR<APIDataShare>, APIDataShareDTO>(ENDPOINTS.create, data);
 };
 
-export const updateApiDataShareManagement = async (id: string,data: APIDataShareDTO): Promise<CUBR<APIDataShare>> => {
+export const updateApiDataShareManagement = async (id: string, data: APIDataShareDTO): Promise<CUBR<APIDataShare>> => {
   return apiPatch<CUBR<APIDataShare>, APIDataShareDTO>(ENDPOINTS.update(id), data);
 };
 
@@ -240,14 +240,14 @@ export const deleteApiDataShareManagement = async (id: string): Promise<DBR> => 
 
 // Hit Log APIs
 export const findApiDataShareLog = async (data: APIDataShareLogQueryDTO): Promise<FBR<APIDataShareLog[]>> => {
-  return apiPost<FBR<APIDataShareLog[]>, APIDataShareLogQueryDTO>(ENDPOINTS.data_share_log_find,data);
+  return apiPost<FBR<APIDataShareLog[]>, APIDataShareLogQueryDTO>(ENDPOINTS.data_share_log_find, data);
 };
 
 // Reports
-export const getExternalApiDailyReport = async (data: APIDataShareReportDTO): Promise<FBR<APIDataShare[]>> => {
-  return apiPost<FBR<APIDataShare[]>, APIDataShareReportDTO>(ENDPOINTS.daily_report,data);
+export const get_external_apis_daily_report = async (data: APIDataShareReportDTO): Promise<FBR<APIDataShare[]>> => {
+  return apiPost<FBR<APIDataShare[]>, APIDataShareReportDTO>(ENDPOINTS.get_external_apis_daily_report, data);
 };
 
-export const getExternalApiMonthlyReport = async (data: APIDataShareReportDTO): Promise<FBR<APIDataShare[]>> => {
-  return apiPost<FBR<APIDataShare[]>, APIDataShareReportDTO>(ENDPOINTS.monthly_report,data);
+export const get_external_apis_monthly_report = async (data: APIDataShareReportDTO): Promise<FBR<APIDataShare[]>> => {
+  return apiPost<FBR<APIDataShare[]>, APIDataShareReportDTO>(ENDPOINTS.get_external_apis_monthly_report, data);
 };
