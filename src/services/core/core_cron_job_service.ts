@@ -2,14 +2,9 @@
 import { apiPost, apiGet } from '../../core/apiCall';
 import { FBR, CUBR } from '../../core/BaseResponse';
 
-// Zod
-import { z } from 'zod';
-import { enumArrayOptional, multi_select_optional } from '../../zod_utils/zod_utils';
-import { BaseQuerySchema } from '../../zod_utils/zod_base_schema';
-
-// Enums
-import { YesNo, ExecutionStatus, RunType } from '../../core/EnumsDB';
 import { CronJobList, CronJobLog } from '../../core/Models';
+import { CronMonitorQueryDTO } from '../../core/ZodSchemasCustom';
+import { CronJobLogQueryDTO } from '../../core/ZodSchemas';
 
 const URL = 'core_cron_job';
 
@@ -24,27 +19,6 @@ const ENDPOINTS = {
     // CronJobLog APIs
     cron_job_log: `${URL}/cron_job_log/search`,
 };
-
-// Monitor / History Query
-export const CronMonitorQuerySchema = BaseQuerySchema.extend({
-    // Enums
-    is_enabled: enumArrayOptional('Is Enabled', YesNo),
-    run_type: enumArrayOptional('Run Type', RunType),
-    execution_status: enumArrayOptional('Execution Status', ExecutionStatus),
-});
-export type CronMonitorQueryDTO = z.infer<typeof CronMonitorQuerySchema>;
-
-// CronJobLog Query
-export const CronJobLogQuerySchema = BaseQuerySchema.extend({
-    // Relations - Parent
-    cron_job_ids: multi_select_optional('CronJobList'), // Multi-selection -> CronJobList
-
-    // Enums
-    run_type: enumArrayOptional('Run Type', RunType),
-    execution_status: enumArrayOptional('Execution Status', ExecutionStatus),
-    is_latest_run: enumArrayOptional('Is Latest Run', YesNo),
-});
-export type CronJobLogQueryDTO = z.infer<typeof CronJobLogQuerySchema>;
 
 // CronJob APIs
 export const cron_job_monitor = async (data: CronMonitorQueryDTO): Promise<FBR<CronJobList[]>> => {

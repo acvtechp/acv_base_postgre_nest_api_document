@@ -1,4 +1,4 @@
-import { r_log } from 'src/core/BaseResponse';
+import { r_log } from '../core/BaseResponse';
 import { z } from 'zod';
 
 // Strings

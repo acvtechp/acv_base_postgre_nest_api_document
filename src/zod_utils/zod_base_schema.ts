@@ -7,7 +7,7 @@ import {
   OrderBy,
   LoginFrom,
   IncludeFields,
-} from 'src/core/EnumsBase';
+} from '../core/EnumsBase';
 import {
   enumArrayOptional,
   enumOptional,
@@ -19,8 +19,8 @@ import {
   dynamicJsonSchema,
   stringMandatory,
   enumMandatory,
-} from 'src/zod_utils/zod_utils';
-import { FileType, Status, YesNo } from 'src/core/EnumsDB';
+} from './zod_utils';
+import { FileType, Status, YesNo } from '../core/EnumsDB';
 
 export const OrderBySchema = z.array(
   z.object({
